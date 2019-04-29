@@ -26,9 +26,9 @@ Make 'swarms' self-organize in a variety of dimensions.
     [ ] Macro for a point's speed (number of moves it makes at once)
     [ ] Add facility to determine swarm equilibrium
     [ ] Add facility to interject a "shawarma" (before and after equilibrium)
-[ ] Main binary
+[X] Main binary
 
-    [ ] Start shwarm_it.c
+    [X] Start shwarm_it.c
 [X] Makefile
 
     [X] Setup macros(?) for external libraries

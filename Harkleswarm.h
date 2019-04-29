@@ -68,7 +68,27 @@ shawarma_ptr build_new_shawarma_struct(int xVal, int yVal, int shNum, char shCha
 		Take care not to lose the pointer to your head node in case this function experiences
 			an error.  PRO TIP: Use a temp variable to store this function's return value.
  */
-hcCartCoord_ptr add_shawarma_node(shawarma_ptr headShawarma, shawarma_ptr newShawarma, int newPos);
+shawarma_ptr add_shawarma_node(shawarma_ptr headShawarma, shawarma_ptr newShawarma, int newPos);
+
+
+/*
+    PURPOSE - Create a linked list of uniquely numbered nodes, each with a uniquely randomized x and y coordinate
+    INPUT
+        xMin - Lowest appropriate value for the node's x coordinate
+        xMax - Largest appropriate value for the node's x coordinate
+        yMin - Lowest appropriate value for the node's y coordinate
+        yMax - Largest appropriate value for the node's y coordinate
+        listLen - Number of nodes to add to the linked list
+        shChar - The character to print for each node (If 0, will use the node's posNum member value)
+        shStatus - shStatus member value for each node
+    OUTPUT
+        On success, pointer to the head node of a linked list containing 'listLen' number of shawarma nodes
+        On failure, NULL
+	NOTES
+		This function calls build_new_shawarma_struct() to allocate and define the struct
+		It is the caller's responsibility to free the memory allocated by this function call
+ */
+shawarma_ptr create_shawarma_list(int xMin, int xMax, int yMin, int yMax, int listLen, char shChar, unsigned long shStatus);
 
 
 /*

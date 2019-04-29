@@ -29,6 +29,7 @@ Make 'swarms' self-organize in a variety of dimensions.
     [ ] Move up Harklecurse
     [ ] Move up Harklerror
     [ ] Move up Harklemath
+    [ ] Move up and rename Rando
 [ ] Harkleswarm library
 
     [ ] Document reuse of struct hcCartesianCoordinate from Harklecurse.h

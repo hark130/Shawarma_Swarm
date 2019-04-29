@@ -122,7 +122,7 @@ shawarma_ptr create_shawarma_list(int xMin, int xMax, int yMin, int yMax, int li
             if (true == success)
             {
                 // Reset temp variables because everything succeeded
-                localShChar = 0;
+                localShChar = shChar;
                 newCoord.xCoord = 0;
                 newCoord.yCoord = 0;
                 tmp_ptr = NULL;  // Not a memory leak because it's in the linked list

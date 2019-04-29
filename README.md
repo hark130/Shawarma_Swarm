@@ -13,7 +13,15 @@ Make 'swarms' self-organize in a variety of dimensions.
 | 3     | 2         | Yes            |
 | 4     | 3?        | Yes            |
 
-## TO DO
+## Branching Convention
+
+* Name branches based on phase:
+    * Phase 1 work branches into `p1`
+    * Further phase-based branching off of `p1`: `p1-1`, `p1-2`, etc
+* Branch off of, and merge into, development
+* When development is verified functional, merge into master
+
+## To Do
 
 [ ] Harkle_Library
 
@@ -42,4 +50,4 @@ Make 'swarms' self-organize in a variety of dimensions.
 
     [ ] Create development
     [ ] Configure development
-    [ ] Create/document branch naming process
+    [X] Create/document branch naming process

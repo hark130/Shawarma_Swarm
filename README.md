@@ -32,8 +32,8 @@ Make 'swarms' self-organize in a variety of dimensions.
     [ ] Move up and rename Rando
 [ ] Harkleswarm library
 
-    [ ] Document reuse of struct hcCartesianCoordinate from Harklecurse.h
-    [ ] Macro for a point's speed (number of moves it makes at once)
+    [X] Document reuse of struct hcCartesianCoordinate from Harklecurse.h (Harkleswarm.h)
+    [X] Macro for a point's speed (number of moves it makes at once) (HS_MAX_SWARM_MOVES in Harkleswarm.h)
     [ ] Add facility to determine swarm equilibrium
     [ ] Add facility to interject a "shawarma" (before and after equilibrium)
 [X] Main binary

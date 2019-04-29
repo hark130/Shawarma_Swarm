@@ -50,33 +50,33 @@ int main(void)
                 HARKLE_ERROR(Shwarm_It, main, wborder failed);
                 success = false;
             }
-		}
-	}
+        }
+    }
 
-	// 3. Track Window
-	if (true == success)
-	{
-		fieldWin = populate_a_winDetails_ptr(stdWin->nRows - INNER_BORDER_WIDTH_V - OUTER_BORDER_WIDTH_V, \
-			                                 stdWin->nCols - INNER_BORDER_WIDTH_H - (2 * OUTER_BORDER_WIDTH_H), \
-			                                 OUTER_BORDER_WIDTH_V, OUTER_BORDER_WIDTH_H);
+    // 3. Track Window
+    if (true == success)
+    {
+        fieldWin = populate_a_winDetails_ptr(stdWin->nRows - INNER_BORDER_WIDTH_V - OUTER_BORDER_WIDTH_V, \
+        	                                 stdWin->nCols - INNER_BORDER_WIDTH_H - (2 * OUTER_BORDER_WIDTH_H), \
+        	                                 OUTER_BORDER_WIDTH_V, OUTER_BORDER_WIDTH_H);
 
-		if (!fieldWin)
-		{
-			HARKLE_ERROR(Shwarm_It, main, populate_a_winDetails_ptr failed);
-			success = false;
-		}
-		else
-		{
-			retVal = wborder(fieldWin->win_ptr, ACS_VLINE, ACS_VLINE, ACS_HLINE, ACS_HLINE, \
-			        	     ACS_ULCORNER, ACS_URCORNER, ACS_LLCORNER, ACS_LRCORNER);
+        if (!fieldWin)
+        {
+            HARKLE_ERROR(Shwarm_It, main, populate_a_winDetails_ptr failed);
+            success = false;
+        }
+        else
+        {
+            retVal = wborder(fieldWin->win_ptr, ACS_VLINE, ACS_VLINE, ACS_HLINE, ACS_HLINE, \
+                             ACS_ULCORNER, ACS_URCORNER, ACS_LLCORNER, ACS_LRCORNER);
 
-			if (OK != retVal)
-			{
-				HARKLE_ERROR(Shwarm_It, main, wborder failed);
-				success = false;
-			}
-		}
-	}
+            if (OK != retVal)
+            {
+                HARKLE_ERROR(Shwarm_It, main, wborder failed);
+                success = false;
+            }
+        }
+    }
 
 	// CLEAN UP
 	// ncurses Windows

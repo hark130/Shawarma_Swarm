@@ -47,8 +47,8 @@ Make 'swarms' self-organize in a variety of dimensions.
     [ ] Build instructions (e.g., make)
     [ ] Execution instructions (e.g., ./shwarm_it.exe)
     [X] Copy/paste git commands
-[ ] Repo Branches
+[X] Repo Branches
 
     [X] Create development
-    [ ] Configure development
+    [X] Configure development
     [X] Create/document branch naming process

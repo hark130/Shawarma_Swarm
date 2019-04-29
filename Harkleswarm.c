@@ -162,6 +162,103 @@ shawarma_ptr create_shawarma_list(int xMin, int xMax, int yMin, int yMax, int li
 }
 
 
+bool rando_unique_coordinates(int xMin, int xMax, int yMin, int yMax, shawarma_ptr headNode_ptr, \
+                              cartPnt_ptr cartCoord_ptr, int maxSearch)
+{
+    // LOCAL VARIABLES
+    bool success = false;  // Set this to true if unique coordinates are found
+    int listLen = 0;       // Store the list length here
+    int searchNum = 0;     // Current search number
+    int randoX = 0;        // Store randomized x coordinates here
+    int randoY = 0;        // Store randomized y coordinates here
+    
+    // INPUT VALIDATION
+    if (xMin > xMax)
+    {
+        HARKLE_ERROR(Harkleswarm, rando_unique_coordinates, Invalid x coordinate min and max);
+        success = false;
+    }
+    else if (yMin > yMax)
+    {
+        HARKLE_ERROR(Harkleswarm, rando_unique_coordinates, Invalid y coordinate min and max);
+        success = false;
+    }
+    else if (!headNode_ptr)
+    {
+        HARKLE_ERROR(Harkleswarm, rando_unique_coordinates, Invalid headNode_ptr);
+        success = false;
+    }
+    else if (!cartCoord_ptr)
+    {
+        HARKLE_ERROR(Harkleswarm, rando_unique_coordinates, Invalid cartCoord_ptr);
+        success = false;
+    }
+    else if (0 > maxSearch)
+    {
+        HARKLE_ERROR(Harkleswarm, rando_unique_coordinates, Invalid maxSearch value);
+        success = false;
+    }
+    else
+    {
+        listLen = get_num_cartCoord_nodes(headNode_ptr);
+        
+        if (0 >= listLen)
+        {
+            HARKLE_ERROR(Harkleswarm, rando_unique_coordinates, get_num_cartCoord_nodes failed);
+            success = false;
+        }
+        else if (listLen >= ((xMax - xMin + 1)(yMax - yMin + 1)))
+        {
+            HARKLE_ERROR(Harkleswarm, rando_unique_coordinates, No room for more coordinates in the list);
+            success = false;
+        }
+    }
+    
+    // RANDOMIZE COORDINATES
+    while (!success)
+    {
+        // 1. Randomize coordinates
+        randoX = rando_me(xMin, xMax);
+        randoY = rando_me(yMin, yMax);
+        
+        // 2. Verify they're unique
+        success = verify_unique_coordinates(randoX, randoY, headNode_ptr);
+        if (true == success)
+        {
+            cartCoord_ptr->xCoord = randoX;
+            cartCoord_ptr->yCoord = randoY;
+            break;  // Found one.  Stop looking.
+        }
+        else
+        {
+            searchNum++;
+        }
+
+        // 3. Check search count
+        if (maxSearch > 0 && searchNum >= maxSearch)
+        {
+            break;  // Didn't find one but we've hit the maximum search iterations
+        }
+    }
+    
+    // DONE
+    return success;
+}
+
+
+/*
+    PURPOSE - Verify a set of coordinates are unique within a linked list of shawarma nodes
+    INPUT
+        xCoord - Compare this to each absX
+        yCoord - Compare this to each absY
+        headNode_ptr - Pointer to a linked list of nodes
+    OUTPUT
+        On success, true if the coordinates are unique and false if the coordinates already exist
+        On failure, false
+ */
+bool verify_unique_coordinates(int xCoord, int yCoord, shawarma_ptr headNode_ptr);
+
+
 bool free_shawarma_struct(shawarma_ptr* oldStruct_ptr)
 {
     return free_cartCoord_struct(oldStruct_ptr);

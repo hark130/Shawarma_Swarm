@@ -1,6 +1,9 @@
 #ifndef __HARKLESWARM__
 #define __HARKLESWARM__
 
-// PLACEHOLDER
+#define OUTER_BORDER_WIDTH_H 4
+#define OUTER_BORDER_WIDTH_V 2
+#define INNER_BORDER_WIDTH_H 4
+#define INNER_BORDER_WIDTH_V 2
 
 #endif  // __HARKLESWARM__

@@ -1,10 +1,13 @@
 #ifndef __HARKLESWARM__
 #define __HARKLESWARM__
 
-#define OUTER_BORDER_WIDTH_H 4
-#define OUTER_BORDER_WIDTH_V 2
-#define INNER_BORDER_WIDTH_H 4
-#define INNER_BORDER_WIDTH_V 2
+// Maximum moves made by one point in one iteration
+#define HS_MAX_SWARM_MOVES 2
+// NCURSES Windows Border Specifications
+#define HS_OUTER_BORDER_WIDTH_H 4
+#define HS_OUTER_BORDER_WIDTH_V 2
+#define HS_INNER_BORDER_WIDTH_H 4
+#define HS_INNER_BORDER_WIDTH_V 2
 
 // Defines the struct that holds a link list of shawarma nodes
 typedef struct hcCartesianCoordinate shawarma, *shawarma_ptr;

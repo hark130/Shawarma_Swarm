@@ -32,10 +32,19 @@ shawarma_ptr build_new_shawarma_struct(int xVal, int yVal, int shNum, char shCha
 }
 
 
-hcCartCoord_ptr add_shawarma_node(shawarma_ptr headShawarma, shawarma_ptr newShawarma, int newPos);
+shawarma_ptr add_shawarma_node(shawarma_ptr headShawarma, shawarma_ptr newShawarma, int newPos)
+{
+    return add_cartCoord_node(headShawarma, newShawarma, newPos);
+}
 
 
-bool free_shawarma_struct(shawarma_ptr* oldStruct_ptr);
+bool free_shawarma_struct(shawarma_ptr* oldStruct_ptr)
+{
+    return free_cartCoord_struct(oldStruct_ptr);
+}
 
 
-bool free_shawarma_linked_list(shawarma_ptr* oldHeadNode_ptr);
+bool free_shawarma_linked_list(shawarma_ptr* oldHeadNode_ptr)
+{
+    return free_cardCoord_linked_list(oldHeadNode_ptr);
+}

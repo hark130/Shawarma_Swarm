@@ -256,7 +256,32 @@ bool rando_unique_coordinates(int xMin, int xMax, int yMin, int yMax, shawarma_p
         On success, true if the coordinates are unique and false if the coordinates already exist
         On failure, false
  */
-bool verify_unique_coordinates(int xCoord, int yCoord, shawarma_ptr headNode_ptr);
+bool verify_unique_coordinates(int xCoord, int yCoord, shawarma_ptr headNode_ptr)
+{
+    // LOCAL VARIABLES
+    bool unique = true;                   // Set this to false if a coordinate match is found
+    shawarma_ptr tmp_ptr = headNode_ptr;  // Iterating node pointer variable
+    
+    // INPUT VALIDATION
+    if (!headNode_ptr)
+    {
+        HARKLE_ERROR(Harkleswarm, verify_unique_coordinates, Invalid headNode_ptr);
+        unique = false;
+    }
+    else
+    {
+        while(tmp_ptr && true == unique)
+        {
+            if (xCoord == tmp_ptr->absX && yCoord == tmp_ptr->absY)
+            {
+                unique = false;
+            }
+        }
+    }
+    
+    // DONE
+    return unique;
+}
 
 
 bool free_shawarma_struct(shawarma_ptr* oldStruct_ptr)

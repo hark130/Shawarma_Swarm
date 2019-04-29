@@ -46,7 +46,7 @@ Make 'swarms' self-organize in a variety of dimensions.
     [ ] Installation instructions (e.g., ncurses)
     [ ] Build instructions (e.g., make)
     [ ] Execution instructions (e.g., ./shwarm_it.exe)
-    [ ] Copy/paste git commands
+    [X] Copy/paste git commands
 [ ] Repo Branches
 
     [ ] Create development

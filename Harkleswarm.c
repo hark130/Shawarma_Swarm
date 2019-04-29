@@ -47,7 +47,7 @@ shawarma_ptr create_shawarma_list(int xMin, int xMax, int yMin, int yMax, int li
     bool success = true;              // Set this to false if anything fails
     localShChar = shChar;             // Level of indirection for the struct graphic member
     int i = 0;                        // Iterating variable
-    cartPnt newCoord = {0,0};         // Temp struct to use as 'out' parameter for rando_unique_coordinates() 
+    cartPnt newCoord = {0, 0};         // Temp struct to use as 'out' parameter for rando_unique_coordinates() 
     
     // INPUT VALIDATION
     if (xMin > xMax)

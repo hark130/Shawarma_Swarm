@@ -9,8 +9,8 @@ int main(void)
     // LOCAL VARIABLES
     int retVal = 0;                  // Program's return value
     bool success = true;             // Set this to false if anything fails
-	winDetails_ptr stdWin = NULL;    // hCurseWinDetails struct pointer for the stdscr window
-	winDetails_ptr fieldWin = NULL;  // hCurseWinDetails struct pointer for the field window
+    winDetails_ptr stdWin = NULL;    // hCurseWinDetails struct pointer for the stdscr window
+    winDetails_ptr fieldWin = NULL;  // hCurseWinDetails struct pointer for the field window
     
 	// PRINT THE FIELD
 	if (true == success)

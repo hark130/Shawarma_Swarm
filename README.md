@@ -49,6 +49,6 @@ Make 'swarms' self-organize in a variety of dimensions.
     [X] Copy/paste git commands
 [ ] Repo Branches
 
-    [ ] Create development
+    [X] Create development
     [ ] Configure development
     [X] Create/document branch naming process

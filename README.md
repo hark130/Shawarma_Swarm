@@ -29,10 +29,10 @@ Make 'swarms' self-organize in a variety of dimensions.
 [ ] Main binary
 
     [ ] Start shwarm_it.c
-[ ] Makefile
+[X] Makefile
 
-    [ ] Setup macros(?) for external libraries
-    [ ] Write production code recipe
+    [X] Setup macros(?) for external libraries
+    [X] Write production code recipe
 [ ] Wiki
 
     [ ] Installation instructions (e.g., ncurses)

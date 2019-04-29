@@ -12,44 +12,44 @@ int main(void)
     winDetails_ptr stdWin = NULL;    // hCurseWinDetails struct pointer for the stdscr window
     winDetails_ptr fieldWin = NULL;  // hCurseWinDetails struct pointer for the field window
     
-	// PRINT THE FIELD
-	if (true == success)
-	{
-		// 1. Setup ncurses
-		initscr();  // Start curses mode
-		cbreak();  // Disables line buffering and erase/kill character-processing
-		// raw();  // Line buffering disabled
-		noecho();  // Disable echo
+    // PRINT THE FIELD
+    if (true == success)
+    {
+        // 1. Setup ncurses
+        initscr();  // Start curses mode
+        cbreak();  // Disables line buffering and erase/kill character-processing
+        // raw();  // Line buffering disabled
+        noecho();  // Disable echo
 
-		// 2. Main Window (stdscr)
-		stdWin = build_a_winDetails_ptr();
+        // 2. Main Window (stdscr)
+        stdWin = build_a_winDetails_ptr();
 
-		if (!stdWin)
-		{
-			HARKLE_ERROR(Shwarm_It, main, build_a_winDetails_ptr failed);
-			success = false;
-		}
-		else
-		{
-			// Populate Main Window struct
-			stdWin->win_ptr = stdscr;
-			stdWin->upperR = 0;
-			stdWin->leftC = 0;
-			getmaxyx(stdscr, stdWin->nRows, stdWin->nCols);  // Determine the maximum dimensions
-			if (ERR == stdWin->nRows || ERR == stdWin->nCols)
-			{
-				HARKLE_ERROR(Shwarm_It, main, getmaxyx failed);
-				success = false;
-			}
+        if (!stdWin)
+        {
+            HARKLE_ERROR(Shwarm_It, main, build_a_winDetails_ptr failed);
+            success = false;
+        }
+        else
+        {
+            // Populate Main Window struct
+            stdWin->win_ptr = stdscr;
+            stdWin->upperR = 0;
+            stdWin->leftC = 0;
+            getmaxyx(stdscr, stdWin->nRows, stdWin->nCols);  // Determine the maximum dimensions
+            if (ERR == stdWin->nRows || ERR == stdWin->nCols)
+            {
+                HARKLE_ERROR(Shwarm_It, main, getmaxyx failed);
+                success = false;
+            }
 
-			retVal = wborder(stdWin->win_ptr, ACS_VLINE, ACS_VLINE, ACS_HLINE, ACS_HLINE, \
-			        	     ACS_ULCORNER, ACS_URCORNER, ACS_LLCORNER, ACS_LRCORNER);
+            retVal = wborder(stdWin->win_ptr, ACS_VLINE, ACS_VLINE, ACS_HLINE, ACS_HLINE, \
+                    	     ACS_ULCORNER, ACS_URCORNER, ACS_LLCORNER, ACS_LRCORNER);
 
-			if (OK != retVal)
-			{
-				HARKLE_ERROR(Shwarm_It, main, wborder failed);
-				success = false;
-			}
+            if (OK != retVal)
+            {
+                HARKLE_ERROR(Shwarm_It, main, wborder failed);
+                success = false;
+            }
 		}
 	}
 

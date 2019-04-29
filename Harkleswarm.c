@@ -6,6 +6,57 @@
 #define HARKLESWARM_MAX_TRIES 3
 #endif  // HARKLESWARM_MAX_TRIES
 
+typedeft struct lineLengthCalculation
+{
+    int xCoord;   // Absolute x coordinate
+    int yCoord;   // Absolute y coordinate
+    double dist;  // Distance from the current point
+} hsLineLen, *hsLineLen_ptr;
+
+/* LOCAL FUNCTIONS */
+
+
+/*
+    PURPOSE - Find the longest distance from an array of lineLengthCalculation structs
+    INPUT
+        storedLineLens_arr - Pointer to a NULL terminated array of lineLengthCalculation struct pointers
+    OUTPUT
+        On success, the largest distance member found in storedLineLens_arr
+        On failure, 0
+    NOTES
+        This is a highly specialized function and, as flexible as it is, was never intended to be
+            used outside of Harkleswarm
+ */
+double find_max_len_from_array(hsLineLen_ptr* storedLineLens_arr)
+{
+    // LOCAL VARIABLES
+    double retVal = 0;       // Store the largest value of lineLengthCalculation.dist here
+    tmpLineLens_ptr = NULL;  // Temporary lineLengthCalculation struct pointer
+    
+    // INPUT VALIDATION
+    if (storedLineLens_arr && *storeLineLens_arr)
+    {
+        // CALCULATE
+        tmpLineLens_ptr = *storeLineLens_arr;
+        
+        while (tmpLineLens_ptr)
+        {
+            if (true == dble_greater_than(tmpLineLens_ptr->dist, retVal, DBL_PRECISION))
+            {
+                retVal = tmpLineLens_ptr->dist;
+            }
+            
+            tmpLineLens_ptr++;
+        }
+    }
+
+    // DONE
+    return retVal;
+}
+
+
+/* GLOBAL FUNCTIONS */
+
 
 shawarma_ptr alloc_shawarma_struct(void)
 {

@@ -92,6 +92,40 @@ shawarma_ptr create_shawarma_list(int xMin, int xMax, int yMin, int yMax, int li
 
 
 /*
+    PURPOSE - Randomize a unique set of coordinates compared to the linked list provided
+    INPUT
+        xMin - Lowest appropriate value for the x coordinate
+        xMax - Largest appropriate value for the x coordinate
+        yMin - Lowest appropriate value for the y coordinate
+        yMax - Largest appropriate value for the y coordinate
+        headNode_ptr - Pointer to a linked list of nodes
+        cartCoord_ptr - Out parameter in which to store the randomized coordinates
+        maxSearch - Maximum number of time to randomize coordinates (If 0, will search forever)
+    OUTPUT
+        On success, true
+        On failure, false
+    NOTES
+        Do not trust the contents of cartCoord_ptr if this function returns false
+        If maxSearch is 0, this function will attempt to randomize forever until it finds a unique coordinate set!
+ */
+bool rando_unique_coordinates(int xMin, int xMax, int yMin, int yMax, shawarma_ptr headNode_ptr, \
+                              cartPnt_ptr cartCoord_ptr, int maxSearch);
+
+
+/*
+    PURPOSE - Verify a set of coordinates are unique within a linked list of shawarma nodes
+    INPUT
+        xCoord - Compare this to each absX
+        yCoord - Compare this to each absY
+        headNode_ptr - Pointer to a linked list of nodes
+    OUTPUT
+        On success, true if the coordinates are unique and false if the coordinates already exist
+        On failure, false
+ */
+bool verify_unique_coordinates(int xCoord, int yCoord, shawarma_ptr headNode_ptr);
+
+
+/*
 	PURPOSE - Free the heap-allocated memory associated with a shawarma struct
 	INPUT
 		oldStruct_ptr - A pointer to a heap-allocated shawarma struct pointer

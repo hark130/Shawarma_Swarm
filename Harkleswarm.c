@@ -2,8 +2,8 @@
 #include "Harkleswarm.h"
 
 #ifndef HARKLESWARM_MAX_TRIES
-// MACRO to limit repeated allocation attempts
-#define HARKLESWARM_MAX_TRIES 3
+// MACRO to limit repeated search attempts
+#define HARKLESWARM_MAX_TRIES 30
 #endif  // HARKLESWARM_MAX_TRIES
 
 typedeft struct lineLengthCalculation
@@ -144,28 +144,30 @@ shawarma_ptr create_shawarma_list(int xMin, int xMax, int yMin, int yMax, int li
             else
             {
                 // 1. Randomize some coordinates
-                // TO DO: DON'T DO NOW
-                // Use the struct cartesianCoordinate from Harklemath as an 'out' parameter for a new function
-                // that randomizes coordinates, walks the linked list, and verifies those coordinates are unique.
-                // if maxSearch is 0, searches forevert
-                // bool rando_unique_coordinates(shawarma_ptr headNode, cartPnt_ptr cartCoord_ptr, int maxSearch);
-                
-                // 2. Create a node
-                tmp_ptr = build_new_shawarma_struct(newCoord.xCoord, newCoord.yCoord, i, localShChar, shStatus);
-                if (!tmp_ptr)
+                success = rando_unique_coordinates(xMin, xMax, yMin, yMax, retVal, &newCoord, HARKLESWARM_MAX_TRIES);
+                if (false == success)
                 {
-                    HARKLE_ERROR(Harkleswarm, create_shawarma_list, build_new_shawarma_struct failed);
-                    success = false;
+                    HARKLE_ERROR(Harkleswarm, create_shawarma_list, rando_unique_coordinates failed);
                 }
                 else
                 {
-                    // 3. Add the node to the list
-                    tmpHead_ptr = add_shawarma_node(retVal, tmp_ptr, listLen + 1);
-                    
-                    if (tmpHead_ptr != retVal && retVal)
+                    // 2. Create a node
+                    tmp_ptr = build_new_shawarma_struct(newCoord.xCoord, newCoord.yCoord, i, localShChar, shStatus);
+                    if (!tmp_ptr)
                     {
-                        HARKLE_ERROR(Harkleswarm, create_shawarma_list, add_shawarma_node failed);
+                        HARKLE_ERROR(Harkleswarm, create_shawarma_list, build_new_shawarma_struct failed);
                         success = false;
+                    }
+                    else
+                    {
+                        // 3. Add the node to the list
+                        tmpHead_ptr = add_shawarma_node(retVal, tmp_ptr, listLen + 1);
+
+                        if (tmpHead_ptr != retVal && retVal)
+                        {
+                            HARKLE_ERROR(Harkleswarm, create_shawarma_list, add_shawarma_node failed);
+                            success = false;
+                        }
                     }
                 }
             }

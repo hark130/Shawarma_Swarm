@@ -69,12 +69,30 @@ int count_entries(void* some_arr, size_t ptrSize)
     int numEntries = -1;     // -1 on error, 0 on failure, number of entries on success
     char *tmp_ptr = NULL;    // Use this to operate on individual bytes of the void*
     bool foundNull = false;  // Set this to true if a NULL pointer is found
+    size_t i = 0;            // Iterating variable
     
     // INPUT VALIDATION
     if (some_arr)
     {
+        numEntries = 0;
+        tmp_ptr = (char *)some_arr;
+
         // COUNT ENTRIES
-        // tmp_ptr = (char *)
+        while (false == foundNull)
+        {
+            foundNull = true;  // Prove this wrong
+            for (i = 0; i < ptrSize; i++)
+            {
+                if (0x0 != (*(tmp_ptr + i)))
+                {
+                    foundNull = false;
+                }
+            }
+            if (false == foundNull)
+            {
+                numEntries++;
+            }
+        }
     }
     
     // DONE

@@ -1,4 +1,6 @@
 #include "Harklecurse.h"        // winDetails, winDetails_ptr
+#include "Harklerror.h"         // HARKLE_ERROR
+#include "Harkleswarm.h"
 #include <ncurses.h>            // WINDOW
 #include <stdio.h>              // puts()
 #include <stdbool.h>            // bool, true, false
@@ -56,9 +58,9 @@ int main(void)
     // 3. Track Window
     if (true == success)
     {
-        fieldWin = populate_a_winDetails_ptr(stdWin->nRows - INNER_BORDER_WIDTH_V - OUTER_BORDER_WIDTH_V, \
-        	                                 stdWin->nCols - INNER_BORDER_WIDTH_H - (2 * OUTER_BORDER_WIDTH_H), \
-        	                                 OUTER_BORDER_WIDTH_V, OUTER_BORDER_WIDTH_H);
+        fieldWin = populate_a_winDetails_ptr(stdWin->nRows - HS_INNER_BORDER_WIDTH_V - HS_OUTER_BORDER_WIDTH_V, \
+                                             stdWin->nCols - HS_INNER_BORDER_WIDTH_H - (2 * HS_OUTER_BORDER_WIDTH_H), \
+                                             HS_OUTER_BORDER_WIDTH_V, HS_OUTER_BORDER_WIDTH_H);
 
         if (!fieldWin)
         {

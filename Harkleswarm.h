@@ -19,6 +19,12 @@ typedef struct hcCartesianCoordinate shawarma, *shawarma_ptr;
 // unsigned long hcFlags;					// Implementation-defined coordinate details
 // pCoord_ptr nextPnt;                      // Next node in the linked list
 
+typedef struct lineLengthCalculation
+{
+    int xCoord;   // Absolute x coordinate
+    int yCoord;   // Absolute y coordinate
+    double dist;  // Distance from the current point
+} hsLineLen, *hsLineLen_ptr;
 
 /*
 	PURPOSE - Allocate heap memory for one shawarma struct
@@ -112,7 +118,7 @@ shawarma_ptr create_shawarma_list(int xMin, int xMax, int yMin, int yMax, int li
         If maxSearch is 0, this function will attempt to randomize forever until it finds a unique coordinate set!
  */
 bool rando_unique_coordinates(int xMin, int xMax, int yMin, int yMax, shawarma_ptr headNode_ptr, \
-                              cartPnt_ptr cartCoord_ptr, int maxSearch);
+                              hsLineLen_ptr cartCoord_ptr, int maxSearch);
 
 
 /*

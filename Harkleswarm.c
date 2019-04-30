@@ -1,17 +1,13 @@
 #include "Harklecurse.h"
+#include "Harklemath.h"         // dble_greater_than()
+#include "Harklerror.h"         // HARKLE_ERROR
 #include "Harkleswarm.h"
+#include "Randoroad.h"          // rando_me()
 
 #ifndef HARKLESWARM_MAX_TRIES
 // MACRO to limit repeated search attempts
 #define HARKLESWARM_MAX_TRIES 30
 #endif  // HARKLESWARM_MAX_TRIES
-
-typedeft struct lineLengthCalculation
-{
-    int xCoord;   // Absolute x coordinate
-    int yCoord;   // Absolute y coordinate
-    double dist;  // Distance from the current point
-} hsLineLen, *hsLineLen_ptr;
 
 /* LOCAL FUNCTIONS */
 
@@ -30,14 +26,14 @@ typedeft struct lineLengthCalculation
 double find_max_len_from_array(hsLineLen_ptr* storedLineLens_arr)
 {
     // LOCAL VARIABLES
-    double retVal = 0;       // Store the largest value of lineLengthCalculation.dist here
-    tmpLineLens_ptr = NULL;  // Temporary lineLengthCalculation struct pointer
+    double retVal = 0;                     // Store the largest value of lineLengthCalculation.dist here
+    hsLineLen_ptr tmpLineLens_ptr = NULL;  // Temporary lineLengthCalculation struct pointer
     
     // INPUT VALIDATION
-    if (storedLineLens_arr && *storeLineLens_arr)
+    if (storedLineLens_arr && *storedLineLens_arr)
     {
         // CALCULATE
-        tmpLineLens_ptr = *storeLineLens_arr;
+        tmpLineLens_ptr = *storedLineLens_arr;
         
         while (tmpLineLens_ptr)
         {
@@ -96,9 +92,9 @@ shawarma_ptr create_shawarma_list(int xMin, int xMax, int yMin, int yMax, int li
     shawarma_ptr tmp_ptr = NULL;      // Temp storage for newly built child nodes
     shawarma_ptr tmpHead_ptr = NULL;  // Temp storage for newly built child nodes
     bool success = true;              // Set this to false if anything fails
-    localShChar = shChar;             // Level of indirection for the struct graphic member
+    char localShChar = shChar;        // Level of indirection for the struct graphic member
     int i = 0;                        // Iterating variable
-    cartPnt newCoord = {0, 0};         // Temp struct to use as 'out' parameter for rando_unique_coordinates() 
+    hsLineLen newCoord = {0, 0, 0};   // Temp struct to use as 'out' parameter for rando_unique_coordinates() 
     
     // INPUT VALIDATION
     if (xMin > xMax)
@@ -216,7 +212,7 @@ shawarma_ptr create_shawarma_list(int xMin, int xMax, int yMin, int yMax, int li
 
 
 bool rando_unique_coordinates(int xMin, int xMax, int yMin, int yMax, shawarma_ptr headNode_ptr, \
-                              cartPnt_ptr cartCoord_ptr, int maxSearch)
+                              hsLineLen_ptr cartCoord_ptr, int maxSearch)
 {
     // LOCAL VARIABLES
     bool success = false;  // Set this to true if unique coordinates are found
@@ -260,7 +256,7 @@ bool rando_unique_coordinates(int xMin, int xMax, int yMin, int yMax, shawarma_p
             HARKLE_ERROR(Harkleswarm, rando_unique_coordinates, get_num_cartCoord_nodes failed);
             success = false;
         }
-        else if (listLen >= ((xMax - xMin + 1)(yMax - yMin + 1)))
+        else if (listLen >= ((xMax - xMin + 1) * (yMax - yMin + 1)))
         {
             HARKLE_ERROR(Harkleswarm, rando_unique_coordinates, No room for more coordinates in the list);
             success = false;

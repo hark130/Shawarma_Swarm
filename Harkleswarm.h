@@ -1,6 +1,8 @@
 #ifndef __HARKLESWARM__
 #define __HARKLESWARM__
 
+#include "Harklemath.h"
+
 // Maximum moves made by one point in one iteration
 #define HS_MAX_SWARM_MOVES 2
 // NCURSES Windows Border Specifications
@@ -19,12 +21,7 @@ typedef struct hcCartesianCoordinate shawarma, *shawarma_ptr;
 // unsigned long hcFlags;					// Implementation-defined coordinate details
 // pCoord_ptr nextPnt;                      // Next node in the linked list
 
-typedef struct lineLengthCalculation
-{
-    int xCoord;   // Absolute x coordinate
-    int yCoord;   // Absolute y coordinate
-    double dist;  // Distance from the current point
-} hsLineLen, *hsLineLen_ptr;
+typedef struct hmLineLengthCalculation hsLineLen, *hsLineLen_ptr;
 
 /*
 	PURPOSE - Allocate heap memory for one shawarma struct

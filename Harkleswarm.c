@@ -51,6 +51,37 @@ double find_max_len_from_array(hsLineLen_ptr* storedLineLens_arr)
 }
 
 
+/*
+    PURPOSE - Count the number of entries in a NULL-terminated array
+    INPUT
+        some_arr - Pointer to a NULL terminated array of pointers, each pointer of size ptrSize
+    OUTPUT
+        On success, the number of non-NULL entries in the array
+        On failure, 0
+        On error, -1
+    NOTES
+        This is a highly specialized function and, as flexible as it is, was never intended to be
+            used outside of Harkleswarm.  Maybe, one day...
+ */
+int count_entries(void* some_arr, size_t ptrSize)
+{
+    // LOCAL VARIABLES
+    int numEntries = -1;     // -1 on error, 0 on failure, number of entries on success
+    char *tmp_ptr = NULL;    // Use this to operate on individual bytes of the void*
+    bool foundNull = false;  // Set this to true if a NULL pointer is found
+    
+    // INPUT VALIDATION
+    if (some_arr)
+    {
+        // COUNT ENTRIES
+        // tmp_ptr = (char *)
+    }
+    
+    // DONE
+    return numEntries
+}
+
+
 /* GLOBAL FUNCTIONS */
 
 
@@ -330,6 +361,45 @@ bool verify_unique_coordinates(int xCoord, int yCoord, shawarma_ptr headNode_ptr
     
     // DONE
     return unique;
+}
+
+
+int find_closest_points(winDetails_ptr curWindow, shawarma_ptr headNode_ptr, int srcNum, hsLineLen_ptr* coord_arr)
+{
+    // LOCAL VARIABLES
+    int numPoints = -1;   // -1 on error, number of points calculated on success
+    
+    // INPUT VALIDATION
+    if (!curWindow)
+    {
+        HARKLE_ERROR(Harkleswarm, find_closest_points, Invalid curWindow);
+    }
+    else if (!headNode_ptr)
+    {
+        HARKLE_ERROR(Harkleswarm, find_closest_points, Invalid headNode_ptr);
+    }
+    else if (!coord_arr || NULL == *coord_arr)
+    {
+        HARKLE_ERROR(Harkleswarm, find_closest_points, Invalid coord_arr);
+    }
+    else
+    {
+        numPoints = 0;  // No errors
+    }
+    
+    // FIND POINTS
+    if (-1 < numPoints)
+    {
+        // 1. Find the pointer to the source coordinate
+
+        // 2. Determine intended dimensions
+
+        // 3. Find nearest points given dimensions
+        
+    }
+    
+    // DONE
+    return numPoints
 }
 
 

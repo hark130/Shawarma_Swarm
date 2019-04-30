@@ -23,13 +23,13 @@ Make 'swarms' self-organize in a variety of dimensions.
 
 ## To Do
 
-[ ] Harkle_Library
+[X] Harkle_Library
 
-    [ ] New repo
-    [ ] Move up Harklecurse
-    [ ] Move up Harklerror
-    [ ] Move up Harklemath
-    [ ] Move up and rename Rando
+    [X] New repo
+    [X] Move up Harklecurse
+    [X] Move up Harklerror
+    [X] Move up Harklemath
+    [X] Move up and rename Rando
 [ ] Harkleswarm library
 
     [X] Document reuse of struct hcCartesianCoordinate from Harklecurse.h (Harkleswarm.h)

@@ -25,7 +25,7 @@ Make 'swarms' self-organize in a variety of dimensions.
 
 [X] Harkle_Library
 
-    [X] New repo
+    [X] New repo [Harkle_Library](https://github.com/hark130/Harkle_Library)
     [X] Move up Harklecurse
     [X] Move up Harklerror
     [X] Move up Harklemath
@@ -35,7 +35,7 @@ Make 'swarms' self-organize in a variety of dimensions.
     [X] Document reuse of struct hcCartesianCoordinate from Harklecurse.h (Harkleswarm.h)
     [X] Macro for a point's speed (number of moves it makes at once) (HS_MAX_SWARM_MOVES in Harkleswarm.h)
     [ ] Add facility to determine swarm equilibrium
-    [ ] Add facility to interject a "shawarma" (before and after equilibrium)
+    [ ] Add facility to inject a "shawarma" (before and after equilibrium)
 [X] Main binary
 
     [X] Start shwarm_it.c

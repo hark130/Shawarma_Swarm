@@ -96,7 +96,7 @@ int count_entries(void* some_arr, size_t ptrSize)
     }
     
     // DONE
-    return numEntries
+    return numEntries;
 }
 
 
@@ -385,7 +385,8 @@ bool verify_unique_coordinates(int xCoord, int yCoord, shawarma_ptr headNode_ptr
 int find_closest_points(winDetails_ptr curWindow, shawarma_ptr headNode_ptr, int srcNum, hsLineLen_ptr* coord_arr)
 {
     // LOCAL VARIABLES
-    int numPoints = -1;   // -1 on error, number of points calculated on success
+    int numPoints = -1;               // -1 on error, number of points calculated on success
+    shawarma_ptr srcShawarma = NULL;  // Source point from which to base all calculations
     
     // INPUT VALIDATION
     if (!curWindow)
@@ -409,15 +410,18 @@ int find_closest_points(winDetails_ptr curWindow, shawarma_ptr headNode_ptr, int
     if (-1 < numPoints)
     {
         // 1. Find the pointer to the source coordinate
+        srcShawarma = get_pos_num(headNode_ptr, srcNum);
 
         // 2. Determine intended dimensions
+        numPoints = count_entries(coord_arr, sizeof(hsLineLen_ptr));
+        printf("Found %d entries!", numPoints);  // DEBUGGING
 
         // 3. Find nearest points given dimensions
-        
+        // TO DO: DON'T DO NOW
     }
     
     // DONE
-    return numPoints
+    return numPoints;
 }
 
 

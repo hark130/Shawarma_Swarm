@@ -14,7 +14,7 @@ int main(void)
     winDetails_ptr stdWin = NULL;    // hCurseWinDetails struct pointer for the stdscr window
     winDetails_ptr fieldWin = NULL;  // hCurseWinDetails struct pointer for the field window
     
-    // PRINT THE FIELD
+    // SETUP THE WINDOWS
     if (true == success)
     {
         // 1. Setup ncurses
@@ -43,19 +43,22 @@ int main(void)
                 HARKLE_ERROR(Shwarm_It, main, getmaxyx failed);
                 success = false;
             }
-
-            retVal = wborder(stdWin->win_ptr, ACS_VLINE, ACS_VLINE, ACS_HLINE, ACS_HLINE, \
-                    	     ACS_ULCORNER, ACS_URCORNER, ACS_LLCORNER, ACS_LRCORNER);
-
-            if (OK != retVal)
+            else
             {
-                HARKLE_ERROR(Shwarm_It, main, wborder failed);
-                success = false;
+                // printf("Max rows: %d\nMax cols: %d\n", stdWin->nRows, stdWin->nCols);  // DEBUGGING
+                retVal = wborder(stdWin->win_ptr, ACS_VLINE, ACS_VLINE, ACS_HLINE, ACS_HLINE, \
+                                 ACS_ULCORNER, ACS_URCORNER, ACS_LLCORNER, ACS_LRCORNER);
+
+                if (OK != retVal)
+                {
+                    HARKLE_ERROR(Shwarm_It, main, wborder failed);
+                    success = false;
+                }
             }
         }
     }
 
-    // 3. Track Window
+    // 3. Field Window
     if (true == success)
     {
         fieldWin = populate_a_winDetails_ptr(stdWin->nRows - HS_INNER_BORDER_WIDTH_V - HS_OUTER_BORDER_WIDTH_V, \
@@ -80,31 +83,43 @@ int main(void)
         }
     }
 
+    // 4. Print the Window
+    if (true == success)
+    {
+        if (OK != wrefresh(fieldWin->win_ptr))  // Print it on the real screen
+        {
+            HARKLE_ERROR(Grand_Prix, main, wrefresh failed on fieldWin);
+            success = false;
+        }
+    }
+    // getchar();  // DEBUGGING
+
 	// CLEAN UP
 	// ncurses Windows
-	// 1. stdWin
+    // 1. fieldWin
+    if (fieldWin)
+    {
+        // Delete the field window
+        if (OK != kill_a_window(&(fieldWin->win_ptr)))
+        {
+            HARKLE_ERROR(Shwarm_It, main, kill_a_window failed);
+        }
+        // Free the struct
+        if (false == kill_a_winDetails_ptr(&fieldWin))
+        {
+            HARKLE_ERROR(Shwarm_It, main, kill_a_winDetails_ptr failed);
+        }
+    }
+	// 2. stdWin
 	if (stdWin)
 	{
-		// delwin the WINDOW*
-		if (OK != kill_a_window(&(stdWin->win_ptr)))
+		// Delete the main window
+        if (OK != kill_a_window(&(stdWin->win_ptr)))
 		{
 			HARKLE_ERROR(Shwarm_It, main, kill_a_window failed);
 		}
-		// free the struct
-		if (false != kill_a_winDetails_ptr(&stdWin))
-		{
-			HARKLE_ERROR(Shwarm_It, main, kill_a_winDetails_ptr failed);	
-		}
-	}
-	// 2. fieldWin
-	if (fieldWin)
-	{
-		if (OK != kill_a_window(&(fieldWin->win_ptr)))
-		{
-			HARKLE_ERROR(Shwarm_It, main, kill_a_window failed);
-		}
-		// free the struct
-		if (false != kill_a_winDetails_ptr(&fieldWin))
+		// Free the struct
+		if (false == kill_a_winDetails_ptr(&stdWin))
 		{
 			HARKLE_ERROR(Shwarm_It, main, kill_a_winDetails_ptr failed);	
 		}

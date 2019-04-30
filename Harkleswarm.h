@@ -132,6 +132,25 @@ bool verify_unique_coordinates(int xCoord, int yCoord, shawarma_ptr headNode_ptr
 
 
 /*
+    PURPOSE - Fill the given array with coordinates and distances representing the closest points to srcNum
+    INPUT
+        curWindow - Pointer to a winDetails struct (used to determine window border points)
+        headNode_ptr - Pointer to the head node of a linked list of shawarma pointers containing available points
+        srcNum - shawarma struct posNum value to use as the 'origin' point to calculate distances
+        coord_arr - NULL-terminated array of hsLineLen struct pointers to use as 'out' parameters
+    OUTPUT
+        On success, number of hsLineLen struct pointers populate with points and distances
+        On failure, 0
+        On error, -1
+    NOTES
+        The return value of this function should equal the number of hsLineLen pointers provided in the array.
+        The number of available pointers in the array will be used to determine the desired dimension.  Arranging
+            a point in one dimension requires two points, two dimensions requires three points (see: triangulation), etc.            
+ */
+int find_closest_points(winDetails_ptr curWindow, shawarma_ptr headNode_ptr, int srcNum, hsLineLen_ptr* coord_arr);
+
+
+/*
 	PURPOSE - Free the heap-allocated memory associated with a shawarma struct
 	INPUT
 		oldStruct_ptr - A pointer to a heap-allocated shawarma struct pointer

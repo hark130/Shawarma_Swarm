@@ -5,14 +5,20 @@
 #include <stdio.h>              // puts()
 #include <stdbool.h>            // bool, true, false
 
+#define NUM_STARTING_POINTS 3  // Number of initial shawarma
+
+void print_debug_info(winDetails_ptr stdWin, winDetails_ptr fieldWin, shawarma_ptr headNode_ptr);
+
+void print_node_info(shawarma_ptr node_ptr);
 
 int main(void)
 {
     // LOCAL VARIABLES
-    int retVal = 0;                  // Program's return value
-    bool success = true;             // Set this to false if anything fails
-    winDetails_ptr stdWin = NULL;    // hCurseWinDetails struct pointer for the stdscr window
-    winDetails_ptr fieldWin = NULL;  // hCurseWinDetails struct pointer for the field window
+    int retVal = 0;                    // Program's return value
+    bool success = true;               // Set this to false if anything fails
+    winDetails_ptr stdWin = NULL;      // hCurseWinDetails struct pointer for the stdscr window
+    winDetails_ptr fieldWin = NULL;    // hCurseWinDetails struct pointer for the field window
+    shawarma_ptr headNode_ptr = NULL;  // Head node of the linked list of shawarmas
     
     // SETUP THE WINDOWS
     if (true == success)
@@ -61,8 +67,8 @@ int main(void)
     // 3. Field Window
     if (true == success)
     {
-        fieldWin = populate_a_winDetails_ptr(stdWin->nRows - HS_INNER_BORDER_WIDTH_V - HS_OUTER_BORDER_WIDTH_V, \
-                                             stdWin->nCols - HS_INNER_BORDER_WIDTH_H - (2 * HS_OUTER_BORDER_WIDTH_H), \
+        fieldWin = populate_a_winDetails_ptr(stdWin->nRows - (2 * HS_OUTER_BORDER_WIDTH_V), \
+                                             stdWin->nCols - (2 * HS_OUTER_BORDER_WIDTH_H), \
                                              HS_OUTER_BORDER_WIDTH_V, HS_OUTER_BORDER_WIDTH_H);
 
         if (!fieldWin)
@@ -88,11 +94,46 @@ int main(void)
     {
         if (OK != wrefresh(fieldWin->win_ptr))  // Print it on the real screen
         {
-            HARKLE_ERROR(Grand_Prix, main, wrefresh failed on fieldWin);
+            HARKLE_ERROR(Shwarm_It, main, wrefresh failed on fieldWin);
             success = false;
         }
     }
     // getchar();  // DEBUGGING
+
+    // SETUP SWARM
+    // 1. Create swarm
+    if (true == success)
+    {
+        headNode_ptr = create_shawarma_list(fieldWin->leftC + 1 - HS_OUTER_BORDER_WIDTH_H,
+                                            fieldWin->nCols - 2,
+                                            fieldWin->upperR + 1 - HS_OUTER_BORDER_WIDTH_V,
+                                            fieldWin->nRows - 2,
+                                            NUM_STARTING_POINTS, 0, 0);
+
+        if (!headNode_ptr)
+        {
+            HARKLE_ERROR(Shwarm_It, main, create_shawarma_list failed);
+            success = false;
+        }
+    }
+
+    // 2. Print swarm
+    if (true == success)
+    {
+        // Update field window
+        if (false == print_plot_list(fieldWin->win_ptr, headNode_ptr))
+        {
+            HARKLE_ERROR(Shwarm_It, main, print_plot_list failed);
+            success = false;
+            print_debug_info(stdWin, fieldWin, headNode_ptr);
+        }
+        else if (OK != wrefresh(fieldWin->win_ptr))  // Print it on the real screen
+        {
+            HARKLE_ERROR(Shwarm_It, main, wrefresh failed on fieldWin);
+            success = false;
+        }
+    }
+    getchar();  // DEBUGGING
 
 	// CLEAN UP
 	// ncurses Windows
@@ -133,3 +174,76 @@ int main(void)
     
     return retVal;
 }
+
+
+void print_debug_info(winDetails_ptr stdWin, winDetails_ptr fieldWin, shawarma_ptr headNode_ptr)
+{
+    // LOCAL VARIABLES
+    shawarma_ptr tmp_ptr = headNode_ptr;  // Walk the linked list
+
+    if (stdWin)
+    {
+        fprintf(stderr, "Max rows: %d\nMax cols: %d\n", stdWin->nRows, stdWin->nCols);
+    }
+    else
+    {
+        fprintf(stderr, "stdwin is NULL\n");
+    }
+    fprintf(stderr, "\n");
+
+    if (fieldWin)
+    {
+        fprintf(stderr, "Field rows: %d\nField cols: %d\n", fieldWin->nRows, fieldWin->nCols);
+    }
+    else
+    {
+        fprintf(stderr, "fieldWin is NULL\n");
+    }
+    fprintf(stderr, "\n");
+
+    if (headNode_ptr)
+    {
+        while (tmp_ptr)
+        {
+            print_node_info(tmp_ptr);
+            tmp_ptr = tmp_ptr->nextPnt;
+        }
+    }
+    else
+    {
+        fprintf(stderr, "headNode_ptr is NULL\n");
+    }
+
+    // DONE
+    return;
+}
+
+
+void print_node_info(shawarma_ptr node_ptr)
+{
+    if (node_ptr)
+    {
+        fprintf(stderr, "\tAddress: %p\n", node_ptr);
+        fprintf(stderr, "\tX Coord: %d\n", node_ptr->absX);
+        fprintf(stderr, "\tY Coord: %d\n", node_ptr->absY);
+        fprintf(stderr, "\tPos Num: %d\n", node_ptr->posNum);
+        fprintf(stderr, "\tFlags:   %lu\n", node_ptr->hcFlags);
+    }
+    else
+    {
+        fprintf(stderr, "node_ptr is NULL\n");
+    }
+    fprintf(stderr, "\n");
+
+    // DONE
+    return;
+}
+
+
+// STRUCT MEMBERS
+// int absX;                                // X coordinate starting at window's top left
+// int absY;                                // Y coordinate starting at window's top left
+// int posNum;                              // Uniquely number the points with this member
+// char graphic;                            // Character to print at this coordinate
+// unsigned long hcFlags;                   // Implementation-defined coordinate details
+// pCoord_ptr nextPnt;                      // Next node in the linked list

@@ -170,12 +170,13 @@ shawarma_ptr create_shawarma_list(int xMin, int xMax, int yMin, int yMax, int li
             // Determine character value
             if (0 == shChar)
             {
-                localShChar = i;
+                localShChar = i + 48;
             }
             
             // First node
             if (!retVal)
             {
+                // puts("Making head node");  // DEBUGGING
                 newCoord.xCoord = rando_me(xMin, xMax);
                 newCoord.yCoord = rando_me(yMin, yMax);
                 retVal = build_new_shawarma_struct(newCoord.xCoord, newCoord.yCoord, i, localShChar, shStatus);
@@ -188,8 +189,10 @@ shawarma_ptr create_shawarma_list(int xMin, int xMax, int yMin, int yMax, int li
             // Additional node
             else
             {
+                // puts("Making child node");  // DEBUGGING
                 // 1. Randomize some coordinates
                 success = rando_unique_coordinates(xMin, xMax, yMin, yMax, retVal, &newCoord, HARKLESWARM_MAX_TRIES);
+                // puts("Got unique coordinates");  // DEBUGGING
                 if (false == success)
                 {
                     HARKLE_ERROR(Harkleswarm, create_shawarma_list, rando_unique_coordinates failed);
@@ -313,14 +316,18 @@ bool rando_unique_coordinates(int xMin, int xMax, int yMin, int yMax, shawarma_p
     }
     
     // RANDOMIZE COORDINATES
-    while (!success)
+    while (1)
     {
         // 1. Randomize coordinates
+        // puts("Randomizing...");  // DEBUGGING
         randoX = rando_me(xMin, xMax);
         randoY = rando_me(yMin, yMax);
+        // puts("Done.");  // DEBUGGING
         
         // 2. Verify they're unique
+        // puts("Verify coordinates are unique...");  // DEBUGGING
         success = verify_unique_coordinates(randoX, randoY, headNode_ptr);
+        // puts("Done.");  // DEBUGGING
         if (true == success)
         {
             cartCoord_ptr->xCoord = randoX;
@@ -374,6 +381,8 @@ bool verify_unique_coordinates(int xCoord, int yCoord, shawarma_ptr headNode_ptr
             {
                 unique = false;
             }
+
+            tmp_ptr = tmp_ptr->nextPnt;
         }
     }
     
@@ -414,7 +423,7 @@ int find_closest_points(winDetails_ptr curWindow, shawarma_ptr headNode_ptr, int
 
         // 2. Determine intended dimensions
         numPoints = count_entries(coord_arr, sizeof(hsLineLen_ptr));
-        printf("Found %d entries!", numPoints);  // DEBUGGING
+        // printf("Found %d entries!", numPoints);  // DEBUGGING
 
         // 3. Find nearest points given dimensions
         // TO DO: DON'T DO NOW

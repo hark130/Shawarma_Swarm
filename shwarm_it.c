@@ -133,7 +133,20 @@ int main(void)
             success = false;
         }
     }
-    getchar();  // DEBUGGING
+    // getchar();  // DEBUGGING
+
+    // END THE SWARM
+    if (true == success)
+    {
+        // Print "Press any key to end race"
+        if (OK != mvwaddstr(stdWin->win_ptr, 1, 1, "Press any key to end the swarm"))
+        {
+            HARKLE_ERROR(Shwarm_It, main, mvwaddstr failed);
+            success = false;
+        }
+        getch();  // Wait for the user to press a key
+        clear();  // Clear the screen
+    }
 
 	// CLEAN UP
 	// ncurses Windows
@@ -171,6 +184,9 @@ int main(void)
     {
         retVal = -1;   
     }
+    clear();  // Clear the screen
+    // Restore tty modes, reset cursor location, and resets the terminal into the proper non-visual mode
+    endwin();  // End curses mode
     
     return retVal;
 }

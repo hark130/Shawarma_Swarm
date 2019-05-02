@@ -19,6 +19,11 @@ int main(void)
     winDetails_ptr stdWin = NULL;      // hCurseWinDetails struct pointer for the stdscr window
     winDetails_ptr fieldWin = NULL;    // hCurseWinDetails struct pointer for the field window
     shawarma_ptr headNode_ptr = NULL;  // Head node of the linked list of shawarmas
+    int tmpNumMoves = 0;               // Capture error codes before incrementing numMoves
+    int numMoves = 0;                  // Number of total moves made each 'cycle'
+    int i = 0;                         // Iterating variable
+    // Current number of points
+    int curNumPoints = NUM_STARTING_POINTS;
     
     // SETUP THE WINDOWS
     if (true == success)
@@ -108,7 +113,7 @@ int main(void)
                                             fieldWin->nCols - 2,
                                             fieldWin->upperR + 1 - HS_OUTER_BORDER_WIDTH_V,
                                             fieldWin->nRows - 2,
-                                            NUM_STARTING_POINTS, 0, 0);
+                                            curNumPoints, 0, 0);
 
         if (!headNode_ptr)
         {
@@ -120,6 +125,14 @@ int main(void)
     // 2. Print swarm
     if (true == success)
     {
+/* DEBUGGING BEGIN */
+shawarma_ptr tmpNode_ptr = headNode_ptr->nextPnt;
+while (tmpNode_ptr)
+{
+    tmpNode_ptr->absY = headNode_ptr->absY;
+    tmpNode_ptr = tmpNode_ptr->nextPnt;
+}
+/* DEBUGGING END */
         // Update field window
         if (false == print_plot_list(fieldWin->win_ptr, headNode_ptr))
         {
@@ -134,6 +147,33 @@ int main(void)
         }
     }
     // getchar();  // DEBUGGING
+
+    // START SWARMING
+    if (true == success)
+    {
+        do
+        {
+            numMoves = 0;  // Reset counting variable
+
+            for (i = 1; i <= curNumPoints; i++)
+            {
+                tmpNumMoves = shwarm_it(fieldWin, headNode_ptr, HS_MAX_SWARM_MOVES, i, 1);
+
+                if (0 > tmpNumMoves)
+                {
+                    HARKLE_ERROR(Shwarm_It, main, shwarm_it failed);
+                    success = false;
+                    getchar();  // DEBUGGING
+                    break;
+                }
+                else
+                {
+                    numMoves += tmpNumMoves;
+                }
+            }
+        }
+        while (numMoves && true == success);  // Keep swarming until equilibrium is reached
+    }
 
     // END THE SWARM
     if (true == success)

@@ -351,16 +351,6 @@ bool rando_unique_coordinates(int xMin, int xMax, int yMin, int yMax, shawarma_p
 }
 
 
-/*
-    PURPOSE - Verify a set of coordinates are unique within a linked list of shawarma nodes
-    INPUT
-        xCoord - Compare this to each absX
-        yCoord - Compare this to each absY
-        headNode_ptr - Pointer to a linked list of nodes
-    OUTPUT
-        On success, true if the coordinates are unique and false if the coordinates already exist
-        On failure, false
- */
 bool verify_unique_coordinates(int xCoord, int yCoord, shawarma_ptr headNode_ptr)
 {
     // LOCAL VARIABLES
@@ -431,6 +421,50 @@ int find_closest_points(winDetails_ptr curWindow, shawarma_ptr headNode_ptr, int
     
     // DONE
     return numPoints;
+}
+
+
+int shwarm_it(winDetails_ptr curWindow, shawarma_ptr headNode_ptr, int srcNum, int numDim, int maxMoves)
+{
+    // LOCAL VARIABLES
+    int numMoves = -1;  // Store the return value from calls to helper functions here
+
+    // INPUT VALIDATION
+    if (!curWindow)
+    {
+        HARKLE_ERROR(Harkleswarm, shwarm_it, Invalid curWindow);
+    }
+    else if (!headNode_ptr)
+    {
+        HARKLE_ERROR(Harkleswarm, shwarm_it, Invalid headNode_ptr);
+    }
+    else if (srcNum < 1)
+    {
+        HARKLE_ERROR(Harkleswarm, shwarm_it, Invalid srcNum);
+    }
+    else if (numDim < 1)
+    {
+        HARKLE_ERROR(Harkleswarm, shwarm_it, Invalid numDim);
+    }
+    else if (maxMoves < 1)
+    {
+        HARKLE_ERROR(Harkleswarm, shwarm_it, Invalid maxMoves);
+    }
+    else
+    {
+        switch (numDim)
+        {
+            case 1:
+                numMoves = 0;  // Placeholder
+                break;
+            default:
+                HARKLE_ERROR(Harkleswarm, shwarm_it, Unsupported dimension);
+                break;
+        }
+    }
+
+    // DONE
+    return numMoves;
 }
 
 

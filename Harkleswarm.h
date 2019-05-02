@@ -5,6 +5,7 @@
 
 // Maximum moves made by one point in one iteration
 #define HS_MAX_SWARM_MOVES 2
+#define HS_MAX_SLOPE_PRECISION 5
 // NCURSES Windows Border Specifications
 #define HS_OUTER_BORDER_WIDTH_H 4
 #define HS_OUTER_BORDER_WIDTH_V 2
@@ -156,15 +157,30 @@ int find_closest_points(winDetails_ptr curWindow, shawarma_ptr headNode_ptr, int
     INPUT
         curWindow - Pointer to a winDetails struct (used to determine window border points)
         headNode_ptr - Pointer to the head node of a linked list of shawarma pointers containing available points
-        srcNum - shawarma struct posNum value to use as the 'origin' point to calculate distances
         maxMoves - Number of one-dimensional moves, regardless of dimension, the node may move to pursue equilibrium
+        srcNum - shawarma struct posNum value to use as the 'origin' point to calculate distances
+        numDim - Number of dimensions in which to organize the swarm
     OUTPUT
         On success, number of moves made (not to exceed maxMoves).  0 indicates success (and also equilibrium).
         On failure, -1
     NOTES
         This function is really a 'wrapper' around dimensionally-specific helper functions
  */
-int shwarm_it(winDetails_ptr curWindow, shawarma_ptr headNode_ptr, int srcNum, int numDim, int maxMoves);
+int shwarm_it(winDetails_ptr curWindow, shawarma_ptr headNode_ptr, int maxMoves, int srcNum, int numDim);
+
+
+/*
+    PURPOSE - Verify that all points represented in the given link list conform to the given slope
+    INPUT
+        headNode_ptr - Pointer to the head node of a linked list of shawarma pointers containing available points
+        slope - Verify that all points in headNode_ptr's linked list form this slope
+        maxPrec - Maximum floating point precision when checking calculated slope against 'slope'
+    OUTPUT
+        If all nodes conform to the given slope, true
+        Otherwise, false
+        On error, false
+ */
+bool verify_line(shawarma_ptr headNode_ptr, double slope, int maxPrec);
 
 
 /*

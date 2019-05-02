@@ -9,7 +9,9 @@
 #define HARKLESWARM_MAX_TRIES 30
 #endif  // HARKLESWARM_MAX_TRIES
 
-/* LOCAL FUNCTIONS */
+////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////// LOCAL FUNCTIONS //////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 /*
@@ -100,7 +102,71 @@ int count_entries(void* some_arr, size_t ptrSize)
 }
 
 
-/* GLOBAL FUNCTIONS */
+/*
+    PURPOSE - Update the coordiantes of shawarma node 'srcNum' by moving it 'maxMoves' toward equilibrium in
+        one (1) dimension
+    INPUT
+        curWindow - Pointer to a winDetails struct (used to determine window border points)
+        headNode_ptr - Pointer to the head node of a linked list of shawarma pointers containing available points
+        sourceNode_ptr - shawarma struct pointer to use as the 'origin' point to calculate distances
+        maxMoves - Number of one-dimensional moves, regardless of dimension, the node may move to pursue equilibrium
+    OUTPUT
+        On success, number of moves made (not to exceed maxMoves).  0 indicates success (and also equilibrium).
+        On failure, -1
+    NOTES
+        This function does not perform input validation.  It assumes the calling function has already validated
+            the parameter being passed in.
+ */
+int shwarm_one_dim(winDetails_ptr curWindow, shawarma_ptr headNode_ptr, int maxMoves, shawarma_ptr sourceNode_ptr)
+{
+    // LOCAL VARIABLES
+    int numMoves = -1;    // Number of moves made
+    bool success = true;  // Prove this wrong
+    double slope = 0.0;   // Store slope here
+
+    // SWARM
+    // 1. Verify minimum number of points (need two to get a slope)
+    if (true == success)
+    {
+        if (2 > get_num_cartCoord_nodes(headNode_ptr))
+        {
+            HARKLE_ERROR(Harkleswarm, shwarm_one_dim, Too few points to determine slope);
+            success = false;
+        }
+    }
+
+    // 2. Calculate slope
+    if (true == success)
+    {
+        slope = calc_int_point_slope(headNode_ptr->absX, headNode_ptr->absY,
+                                     headNode_ptr->nextPnt->absX, headNode_ptr->nextPnt->absY);
+    }
+
+    // 3. Verify line
+    if (true == success)
+    {
+        success = verify_line(headNode_ptr, slope, HS_MAX_SLOPE_PRECISION);
+    }
+
+    // 4. Find closest points
+    if (true == success)
+    {
+        
+    }
+
+    // 5. Consider intercepts
+    if (true == success)
+    {
+        
+    }
+
+    // DONE
+    return numMoves;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////// GLOBAL FUNCTIONS /////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 shawarma_ptr alloc_shawarma_struct(void)
@@ -121,6 +187,10 @@ shawarma_ptr build_new_shawarma_struct(int xVal, int yVal, int shNum, char shCha
     if (retVal)
     {
         retVal->posNum = shNum;
+    }
+    else
+    {
+        HARKLE_ERROR(Harkleswarm, build_new_shawarma_struct, build_new_cartCoord_struct failed);
     }
     
     // DONE
@@ -424,10 +494,11 @@ int find_closest_points(winDetails_ptr curWindow, shawarma_ptr headNode_ptr, int
 }
 
 
-int shwarm_it(winDetails_ptr curWindow, shawarma_ptr headNode_ptr, int srcNum, int numDim, int maxMoves)
+int shwarm_it(winDetails_ptr curWindow, shawarma_ptr headNode_ptr, int maxMoves, int srcNum, int numDim)
 {
     // LOCAL VARIABLES
-    int numMoves = -1;  // Store the return value from calls to helper functions here
+    int numMoves = -1;                   // Store the return value from helper functions here
+    shawarma_ptr sourceNode_ptr = NULL;  // Node pointer for 'srcNum'
 
     // INPUT VALIDATION
     if (!curWindow)
@@ -452,19 +523,78 @@ int shwarm_it(winDetails_ptr curWindow, shawarma_ptr headNode_ptr, int srcNum, i
     }
     else
     {
-        switch (numDim)
+        // SWARM
+        // 1. Find the source node pointer
+        sourceNode_ptr = get_pos_num(headNode_ptr, srcNum);
+
+        if (!sourceNode_ptr)
         {
-            case 1:
-                numMoves = 0;  // Placeholder
-                break;
-            default:
-                HARKLE_ERROR(Harkleswarm, shwarm_it, Unsupported dimension);
-                break;
+            HARKLE_ERROR(Harkleswarm, shwarm_it, get_pos_num failed);
+        }
+        else
+        {
+            // 2. Call the dimensionally appropriate helper function
+            switch (numDim)
+            {
+                case 1:
+                    numMoves = shwarm_one_dim(curWindow, headNode_ptr, maxMoves, sourceNode_ptr);
+                    break;
+                default:
+                    HARKLE_ERROR(Harkleswarm, shwarm_it, Unsupported dimension);
+                    break;
+            }
         }
     }
 
     // DONE
     return numMoves;
+}
+
+
+bool verify_line(shawarma_ptr headNode_ptr, double slope, int maxPrec)
+{
+    // LOCAL VARIABLES
+    bool straightLine = false;                // Set this to true if everything checks out
+    shawarma_ptr tmpNode_ptr = headNode_ptr;  // Iterating node pointer
+    double tmpSlope = 0.0;                    // Store calls to slope functions here
+
+    // INPUT VALIDATION
+    if (!headNode_ptr)
+    {
+        HARKLE_ERROR(Harkleswarm, verify_line, Invalid headNode_ptr);
+    }
+    else if (maxPrec < 1)
+    {
+        HARKLE_ERROR(Harkleswarm, verify_line, Invalid level of floating point precision);
+    }
+    else if (2 > get_num_cartCoord_nodes(headNode_ptr))
+    {
+        HARKLE_ERROR(Harkleswarm, verify_line, Too few points to determine slope);
+    }
+    else
+    {
+        // ITERATE POINTS
+        straightLine = true;  // Prove this wrong
+
+        while (tmpNode_ptr->nextPnt)
+        {
+            tmpSlope = calc_int_point_slope(tmpNode_ptr->absX, tmpNode_ptr->absY,
+                                            tmpNode_ptr->nextPnt->absX, tmpNode_ptr->nextPnt->absY);
+
+            if (false == dble_equal_to(tmpSlope, slope, maxPrec))
+            {
+                straightLine = false;
+                break;
+            }
+            else
+            {
+                tmpNode_ptr = tmpNode_ptr->nextPnt;  // Keep checking
+            }
+        }
+    }
+
+    // DONE
+    return straightLine;
 }
 
 

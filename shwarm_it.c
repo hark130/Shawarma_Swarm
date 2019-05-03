@@ -157,7 +157,7 @@ while (tmpNode_ptr)
 
             for (i = 1; i <= curNumPoints; i++)
             {
-                tmpNumMoves = shwarm_it(fieldWin, headNode_ptr, HS_MAX_SWARM_MOVES, i, 1);
+                tmpNumMoves = shwarm_it(fieldWin, headNode_ptr, HS_MAX_SWARM_MOVES, i, 1, false);
 
                 if (0 > tmpNumMoves)
                 {

@@ -137,7 +137,7 @@ bool verify_unique_coordinates(int xCoord, int yCoord, shawarma_ptr headNode_ptr
     INPUT
         curWindow - Pointer to a winDetails struct (used to determine window border points)
         headNode_ptr - Pointer to the head node of a linked list of shawarma pointers containing available points
-        srcNum - shawarma struct posNum value to use as the 'origin' point to calculate distances
+        sourceNode_ptr - shawarma struct pointer to use as the 'origin' point to calculate distances
         coord_arr - NULL-terminated array of hsLineLen struct pointers to use as 'out' parameters
     OUTPUT
         On success, number of hsLineLen struct pointers populate with points and distances
@@ -148,7 +148,7 @@ bool verify_unique_coordinates(int xCoord, int yCoord, shawarma_ptr headNode_ptr
         The number of available pointers in the array will be used to determine the desired dimension.  Arranging
             a point in one dimension requires two points, two dimensions requires three points (see: triangulation), etc.            
  */
-int find_closest_points(winDetails_ptr curWindow, shawarma_ptr headNode_ptr, int srcNum, hsLineLen_ptr* coord_arr);
+int find_closest_points(winDetails_ptr curWindow, shawarma_ptr headNode_ptr, shawarma_ptr sourceNode_ptr, hsLineLen_ptr* coord_arr);
 
 
 /*
@@ -160,13 +160,14 @@ int find_closest_points(winDetails_ptr curWindow, shawarma_ptr headNode_ptr, int
         maxMoves - Number of one-dimensional moves, regardless of dimension, the node may move to pursue equilibrium
         srcNum - shawarma struct posNum value to use as the 'origin' point to calculate distances
         numDim - Number of dimensions in which to organize the swarm
+        intercepts - If true, dimensional intercepts will be treated as points for the purposes of equilibrium
     OUTPUT
         On success, number of moves made (not to exceed maxMoves).  0 indicates success (and also equilibrium).
         On failure, -1
     NOTES
         This function is really a 'wrapper' around dimensionally-specific helper functions
  */
-int shwarm_it(winDetails_ptr curWindow, shawarma_ptr headNode_ptr, int maxMoves, int srcNum, int numDim);
+int shwarm_it(winDetails_ptr curWindow, shawarma_ptr headNode_ptr, int maxMoves, int srcNum, int numDim, bool intercepts);
 
 
 /*
@@ -181,6 +182,25 @@ int shwarm_it(winDetails_ptr curWindow, shawarma_ptr headNode_ptr, int maxMoves,
         On error, false
  */
 bool verify_line(shawarma_ptr headNode_ptr, double slope, int maxPrec);
+
+
+/*
+    PURPOSE - Populate a hsLineLen struct with the points from destNode_ptr along with the distance between
+        destNode_ptr and sourceNode_ptr
+    INPUT
+        sourceNode_ptr - shawarma struct pointer to use as the 'origin' point to calculate distances
+        destNode_ptr - Pointer to a node to use as the actual coordinates and caculate the distancfe from
+            sourceNode_ptr
+        outParam_ptr - The hsLineLen struct pointer to hold the coordinates from destNode_ptr and the distance
+            between sourceNode_ptr and destNode_ptr
+    OUTPUT
+        On success, true
+        On failure or error, false
+    NOTES
+        If sourceNode_ptr is the same as destNode_ptr, function will error
+        If the source coordinates are the same as the destination coordinates, function will error
+ */
+bool calc_hsLineLen_contents(shawarma_ptr sourceNode_ptr, shawarma_ptr destNode_ptr, hsLineLen_ptr outParam_ptr);
 
 
 /*

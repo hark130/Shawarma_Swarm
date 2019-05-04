@@ -916,6 +916,45 @@ bool calc_hsLineLen_contents(shawarma_ptr sourceNode_ptr, shawarma_ptr destNode_
 }
 
 
+int move_shawarma(shawarma_ptr node_ptr, hsLineLen_ptr dstCoord_ptr, int maxMoves)
+{
+    // LOCAL VARIABLES
+    int numMoves = -1;
+
+    // INPUT VALIDATION
+    if (!node_ptr)
+    {
+        HARKLE_ERROR(Harkleswarm, move_shawarma, Invalid node_ptr);
+    }
+    else if (!dstCoord_ptr)
+    {
+        HARKLE_ERROR(Harkleswarm, move_shawarma, Invalid dstCoord_ptr);
+    }
+    else if (1 > maxMoves)
+    {
+        HARKLE_ERROR(Harkleswarm, move_shawarma, Invalid number of moves);
+    }
+    else
+    {
+        // MOVE IT
+        numMoves = 0;
+
+        // Update distance
+        dstCoord_ptr->dist = calc_int_point_dist(node_ptr->absX, node_ptr->absY,
+                                                 dstCoord_ptr->xCoord, dstCoord_ptr->yCoord);
+
+        while (numMoves < maxMoves)
+        {
+            
+        }
+    }
+    
+
+    // DONE
+    return numMoves;
+}
+
+
 bool free_shawarma_struct(shawarma_ptr* oldStruct_ptr)
 {
     return free_cartCoord_struct(oldStruct_ptr);

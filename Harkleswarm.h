@@ -204,6 +204,21 @@ bool calc_hsLineLen_contents(shawarma_ptr sourceNode_ptr, shawarma_ptr destNode_
 
 
 /*
+    PURPOSE - Update the coordinates of node_ptr so that it is "maxMoves" closer to dstCoord_ptr's coordiantes
+    INPUT
+        node_ptr - The coordinates to update
+        dstCoord_ptr - The destination coordinates
+        maxMoves - Maximum number of moves to make
+    OUTPUT
+        On success, number of moves made (0 counts as success)
+        On failure, -1
+    NOTES
+        node_ptr will not be moved if distance is 1 unless neither axis of node_ptr and dstCoord_ptr match
+ */
+int move_shawarma(shawarma_ptr node_ptr, hsLineLen_ptr dstCoord_ptr, int maxMoves);
+
+
+/*
     PURPOSE - Free the heap-allocated memory associated with a shawarma struct
     INPUT
         oldStruct_ptr - A pointer to a heap-allocated shawarma struct pointer

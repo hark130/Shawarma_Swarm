@@ -329,11 +329,24 @@ int shwarm_one_dim(winDetails_ptr curWindow, shawarma_ptr headNode_ptr, shawarma
     if (true == success)
     {
         success = determine_mid_point(&point1, &point2, &midPnt, 0);
+
+        if (false == success)
+        {
+            HARKLE_ERROR(Harkleswarm, shwarm_one_dim, determine_mid_point failed);
+        }
     }
 
     // 7. Move the point closer
-    // TO DO: DON'T DO NOW... write a helper function that takes the sourceNode_ptr, the destination coordinate, and maxMoves
-    // Then that helper function moves the coordinates of sourceNode_ptr "maxMoves" moves towards the destination coordinate.
+    if (true == success)
+    {
+        numMoves = move_shawarma(sourceNode_ptr, &midPnt, maxMoves);
+
+        if (0 > numMoves)
+        {
+            HARKLE_ERROR(Harkleswarm, shwarm_one_dim, move_shawarma failed);
+            success = false;
+        }
+    }
 
     // DONE
     return numMoves;

@@ -305,7 +305,15 @@ int shwarm_one_dim(winDetails_ptr curWindow, shawarma_ptr headNode_ptr, shawarma
     // 5. Find closest points
     if (true == success)
     {
+        // printf("BEFORE\n");  // DEBUGGING
+        // printf("Source_ptr (x, y) == (%d, %d)\n", sourceNode_ptr->absX, sourceNode_ptr->absY); // DEBUGGING
+        // printf("Point 1 (x, y) == (%d, %d)\n", point1.xCoord, point1.yCoord);  // DEBUGGING
+        // printf("Point 2 (x, y) == (%d, %d)\n", point2.xCoord, point2.yCoord);  // DEBUGGING
         numClosePnts = find_closest_points(curWindow, headNode_ptr, sourceNode_ptr, coord_arr);
+        // printf("AFTER\n");  // DEBUGGING
+        // printf("Source_ptr (x, y) == (%d, %d)\n", sourceNode_ptr->absX, sourceNode_ptr->absY); // DEBUGGING
+        // printf("Point 1 (x, y) == (%d, %d)\n", point1.xCoord, point1.yCoord);  // DEBUGGING
+        // printf("Point 2 (x, y) == (%d, %d)\n", point2.xCoord, point2.yCoord);  // DEBUGGING
 
         // One dimension should find two points (dim + 1)
         if (-1 == numClosePnts)
@@ -684,7 +692,7 @@ int find_closest_points(winDetails_ptr curWindow, shawarma_ptr headNode_ptr, sha
     {
         // 1. Determine intended dimensions
         numPoints = count_entries(coord_arr, sizeof(hsLineLen_ptr));
-        // printf("Found %d entries!", numPoints);  // DEBUGGING
+        printf("Found %d entries!\n", numPoints);  // DEBUGGING
 
         // 2. Verify minimum number of nodes exist
         if (numPoints > (get_num_cartCoord_nodes(headNode_ptr) - 1))
@@ -701,11 +709,21 @@ int find_closest_points(winDetails_ptr curWindow, shawarma_ptr headNode_ptr, sha
 
             // A. Fill the array with the first "numPoints" number of node entries
             tmpNum = 0;  // Reset temp variable
+            printf("BEGINNING: Using sourceNode_ptr (%p) (x, y) == (%d, %d)\n", sourceNode_ptr, sourceNode_ptr->absX, sourceNode_ptr->absY);  // DEBUGGING
             while (tmpNode_ptr && tmpNum < numPoints && true == success)
             {
+                // printf("coord_arr[0] == (%d, %d)\n", coord_arr[0]->xCoord, coord_arr[0]->yCoord);  // DEBUGGING
+                // printf("coord_arr[1] == (%d, %d)\n", coord_arr[1]->xCoord, coord_arr[1]->yCoord);  // DEBUGGING
                 if (tmpNode_ptr != sourceNode_ptr)
                 {
+                    printf("ROUND 1: Processing tmpNode_ptr (%p) (x, y) == (%d, %d)\n", tmpNode_ptr, tmpNode_ptr->absX, tmpNode_ptr->absY);  // DEBUGGING
+                    // printf("BEFORE\n");  // DEBUGGING
+                    // printf("coord_arr[0] == (%d, %d)\n", coord_arr[0]->xCoord, coord_arr[0]->yCoord);  // DEBUGGING
+                    // printf("coord_arr[1] == (%d, %d)\n", coord_arr[1]->xCoord, coord_arr[1]->yCoord);  // DEBUGGING
                     success = calc_hsLineLen_contents(sourceNode_ptr, tmpNode_ptr, *tmpArr_ptr);
+                    // printf("AFTER\n");  // DEBUGGING
+                    // printf("coord_arr[0] == (%d, %d)\n", coord_arr[0]->xCoord, coord_arr[0]->yCoord);  // DEBUGGING
+                    // printf("coord_arr[1] == (%d, %d)\n", coord_arr[1]->xCoord, coord_arr[1]->yCoord);  // DEBUGGING
 
                     if (false == success)
                     {
@@ -728,6 +746,7 @@ int find_closest_points(winDetails_ptr curWindow, shawarma_ptr headNode_ptr, sha
 
                 tmpNode_ptr = tmpNode_ptr->nextPnt;
             }
+            printf("ROUND 1 Complete\n");  // DEBUGGING
             tmpArr_ptr = NULL;  // Don't use this anymore
 
             // B. Check the rest of the linked list for closer entries
@@ -735,8 +754,15 @@ int find_closest_points(winDetails_ptr curWindow, shawarma_ptr headNode_ptr, sha
             {
                 if (tmpNode_ptr != sourceNode_ptr)
                 {
+                    printf("ROUND 2: Processing tmpNode_ptr (%p) (x, y) == (%d, %d)\n", tmpNode_ptr, tmpNode_ptr->absX, tmpNode_ptr->absY);  // DEBUGGING
                     // Calculate length
+                    // printf("BEFORE\n");  // DEBUGGING
+                    // printf("coord_arr[0] == (%d, %d)\n", coord_arr[0]->xCoord, coord_arr[0]->yCoord);  // DEBUGGING
+                    // printf("coord_arr[1] == (%d, %d)\n", coord_arr[1]->xCoord, coord_arr[1]->yCoord);  // DEBUGGING
                     success = calc_hsLineLen_contents(sourceNode_ptr, tmpNode_ptr, &localLineLen);
+                    // printf("AFTER\n");  // DEBUGGING
+                    // printf("coord_arr[0] == (%d, %d)\n", coord_arr[0]->xCoord, coord_arr[0]->yCoord);  // DEBUGGING
+                    // printf("coord_arr[1] == (%d, %d)\n", coord_arr[1]->xCoord, coord_arr[1]->yCoord);  // DEBUGGING
 
                     if (false == success)
                     {
@@ -772,6 +798,7 @@ int find_closest_points(winDetails_ptr curWindow, shawarma_ptr headNode_ptr, sha
 
                 tmpNode_ptr = tmpNode_ptr->nextPnt;
             }
+            printf("ROUND 2 Complete\n");  // DEBUGGING
         }
     }
     
@@ -824,6 +851,10 @@ int shwarm_it(winDetails_ptr curWindow, shawarma_ptr headNode_ptr, int maxMoves,
             {
                 case 1:
                     numMoves = shwarm_one_dim(curWindow, headNode_ptr, sourceNode_ptr, maxMoves, intercepts);
+                    if (0 > numMoves)
+                    {
+                        HARKLE_ERROR(Harkleswarm, shwarm_it, shwarm_one_dim failed);
+                    }
                     break;
                 default:
                     HARKLE_ERROR(Harkleswarm, shwarm_it, Unsupported dimension);
@@ -869,6 +900,8 @@ bool verify_line(shawarma_ptr headNode_ptr, double slope, int maxPrec)
 
             if (false == dble_equal_to(tmpSlope, slope, maxPrec))
             {
+                printf("verify_line() ERROR tmpSlope %f != slope %f\n", tmpSlope, slope);  // DEBUGGING
+                printf("tmpNode (x, y) == (%d, %d) and tmpNode->nextPnt (x, y) == (%d, %d)\n", tmpNode_ptr->absX, tmpNode_ptr->absY, tmpNode_ptr->nextPnt->absX, tmpNode_ptr->nextPnt->absY);  // DEBUGGING
                 straightLine = false;
                 break;
             }
@@ -908,6 +941,9 @@ bool calc_hsLineLen_contents(shawarma_ptr sourceNode_ptr, shawarma_ptr destNode_
     }
     else if (sourceNode_ptr->absX == destNode_ptr->absX && sourceNode_ptr->absY == destNode_ptr->absY)
     {
+        printf("calc_hsLineLen_contents() ERROR ");  // DEBUGGING
+        printf("Source Node (x, y) == (%d, %d) ", sourceNode_ptr->absX, sourceNode_ptr->absY);  // DEBUGGING
+        printf("Dest Node (x, y) == (%d, %d)\n", destNode_ptr->absX, destNode_ptr->absY);  // DEBUGGING
         HARKLE_ERROR(Harkleswarm, calc_hsLineLen_contents, Source and destination coordinates may not be the same);
     }
     else
@@ -934,6 +970,8 @@ int move_shawarma(shawarma_ptr node_ptr, hsLineLen_ptr dstCoord_ptr, int maxMove
 {
     // LOCAL VARIABLES
     int numMoves = -1;
+    int absXDist = 0;   // Absolute value of the distance between x coordinates
+    int absYDist = 0;   // Absolute value of the distance between y coordinates
 
     // INPUT VALIDATION
     if (!node_ptr)
@@ -962,15 +1000,20 @@ int move_shawarma(shawarma_ptr node_ptr, hsLineLen_ptr dstCoord_ptr, int maxMove
             // Ensure points don't "consume" each other
             if (1 == dstCoord_ptr->dist)
             {
-                // Check for the "diagonally adjacent point" edge case
-                if (dstCoord_ptr->xCoord == node_ptr->absX
-                    || dstCoord_ptr->yCoord == node_ptr->absY)
-                {
-                    break;  // Done.
-                }
+                // // Check for the "diagonally adjacent point" edge case
+                // if (dstCoord_ptr->xCoord == node_ptr->absX
+                //     || dstCoord_ptr->yCoord == node_ptr->absY)
+                // {
+                //     break;  // Done.
+                // }
+                break;  // Troubleshooting a BUG
             }
             // Move it
-            if (abs(dstCoord_ptr->xCoord - node_ptr->absX) >= (dstCoord_ptr->yCoord - node_ptr->absY))
+            printf("destination (x, y) == (%d, %d) moving node (x, y) == (%d, %d)\n", dstCoord_ptr->xCoord, dstCoord_ptr->yCoord, node_ptr->absX, node_ptr->absY);  // DEBUGGING
+            printf("xCoord diff == %d and the yCoord diff == %d\n", abs(dstCoord_ptr->xCoord - node_ptr->absX), abs(dstCoord_ptr->yCoord - node_ptr->absY));  // DEBUGGING
+            absXDist = abs(dstCoord_ptr->xCoord - node_ptr->absX);
+            absYDist = abs(dstCoord_ptr->yCoord - node_ptr->absY);
+            if (absXDist >= absYDist && absXDist)
             {
                 // X coordinate
                 if (node_ptr->absX > dstCoord_ptr->xCoord)

@@ -189,7 +189,7 @@ bool verify_line(shawarma_ptr headNode_ptr, double slope, int maxPrec);
         destNode_ptr and sourceNode_ptr
     INPUT
         sourceNode_ptr - shawarma struct pointer to use as the 'origin' point to calculate distances
-        destNode_ptr - Pointer to a node to use as the actual coordinates and caculate the distancfe from
+        destNode_ptr - Pointer to a node to use as the actual coordinates and caculate the distance from
             sourceNode_ptr
         outParam_ptr - The hsLineLen struct pointer to hold the coordinates from destNode_ptr and the distance
             between sourceNode_ptr and destNode_ptr

@@ -3,6 +3,7 @@
 #include "Harklerror.h"         // HARKLE_ERROR
 #include "Harkleswarm.h"
 #include "Randoroad.h"          // rando_me()
+#include <stdlib.h>             // abs()
 
 #ifndef HARKLESWARM_MAX_TRIES
 // MACRO to limit repeated search attempts
@@ -939,16 +940,50 @@ int move_shawarma(shawarma_ptr node_ptr, hsLineLen_ptr dstCoord_ptr, int maxMove
         // MOVE IT
         numMoves = 0;
 
-        // Update distance
-        dstCoord_ptr->dist = calc_int_point_dist(node_ptr->absX, node_ptr->absY,
-                                                 dstCoord_ptr->xCoord, dstCoord_ptr->yCoord);
-
         while (numMoves < maxMoves)
         {
-            
+            // Update distance
+            dstCoord_ptr->dist = calc_int_point_dist(node_ptr->absX, node_ptr->absY,
+                                                     dstCoord_ptr->xCoord, dstCoord_ptr->yCoord);
+
+            // Ensure points don't "consume" each other
+            if (1 == dstCoord_ptr->dist)
+            {
+                // Check for the "diagonally adjacent point" edge case
+                if (dstCoord_ptr->xCoord == node_ptr->absX
+                    || dstCoord_ptr->yCoord == node_ptr->absY)
+                {
+                    break;  // Done.
+                }
+            }
+            // Move it
+            if (abs(dstCoord_ptr->xCoord - node_ptr->absX) >= (dstCoord_ptr->yCoord - node_ptr->absY))
+            {
+                // X coordinate
+                if (node_ptr->absX > dstCoord_ptr->xCoord)
+                {
+                    node_ptr->absX--;
+                }
+                else
+                {
+                    node_ptr->absX++;
+                }
+            }
+            else
+            {
+                // Y coordinate
+                if (node_ptr->absY > dstCoord_ptr->yCoord)
+                {
+                    node_ptr->absY--;
+                }
+                else
+                {
+                    node_ptr->absY++;
+                }
+            }
+            numMoves++;  // If you've made it here, you moved one coordinate
         }
     }
-    
 
     // DONE
     return numMoves;

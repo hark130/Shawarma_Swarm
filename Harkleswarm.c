@@ -257,6 +257,7 @@ int shwarm_one_dim(winDetails_ptr curWindow, shawarma_ptr headNode_ptr, shawarma
     int numClosePnts = 0;  // Number of points that find_closest_points() found
     hsLineLen point1 = { 0, 0, 0.0 };  // Out parameter for find_closest_points()
     hsLineLen point2 = { 0, 0, 0.0 };  // Out parameter for find_closest_points()
+    hsLineLen midPnt = { 0, 0, 0.0 };  // Out parameter for determine_mid_point()
     hsLineLen_ptr coord_arr[] = { &point1, &point2, NULL };
 
     // SWARM
@@ -324,7 +325,10 @@ int shwarm_one_dim(winDetails_ptr curWindow, shawarma_ptr headNode_ptr, shawarma
     }
 
     // 6. Calculate center
-    // A. Determine slope, B. Determine distance, C. Find "distance / 2" along the slope from one of the closest points
+    if (true == success)
+    {
+        success = determine_mid_point(&point1, &point2, &midPnt, 0);
+    }
 
     // 7. Move the point closer
     // TO DO: DON'T DO NOW... write a helper function that takes the sourceNode_ptr, the destination coordinate, and maxMoves

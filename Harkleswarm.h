@@ -219,6 +219,26 @@ int move_shawarma(shawarma_ptr node_ptr, hsLineLen_ptr dstCoord_ptr, int maxMove
 
 
 /*
+    PURPOSE - Create a linked list of shawarma nodes holding the graph intercepts for sourceNode_ptr, a node
+        in headNode_ptr's linked list, within curWindow given the desired dimensions in numDim.
+    INPUT
+    OUTPUT
+        On success, true (and outHeadNode_ptr holds a pointer to a linked list holding the intercepts)
+        On failure, false
+    NOTES
+        The linked list is necessary to determine intercepts for one dimension because it will have to
+            calculate the slope of the line to establish the intercepts.  The linked list is not necessary
+            for two dimensions.
+        The nodes in outHeadNode_ptr will be 'zeroized' to the greatest degree possible.  Specifically,
+            posNum and graphic will both be set to 0x0.  This should aid in free()ing the nodes when
+            calculations are complete.
+        The caller of this function is responsible for free()ing any nodes allocated to outHeadNode_ptr.
+ */
+bool calculate_intercepts(winDetails_ptr curWindow, shawarma_ptr headNode_ptr, shawarma_ptr sourceNode_ptr,
+                          shawarma_ptr *outHeadNode_ptr, int numDim);
+
+
+/*
     PURPOSE - Free the heap-allocated memory associated with a shawarma struct
     INPUT
         oldStruct_ptr - A pointer to a heap-allocated shawarma struct pointer

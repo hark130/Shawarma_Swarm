@@ -609,6 +609,21 @@ int find_closest_one_dim_points(winDetails_ptr curWindow, shawarma_ptr headNode_
 }
 
 
+/*
+    PURPOSE - Create a linked list of shawarma nodes holding the graph intercepts for sourceNode_ptr, a node
+        in headNode_ptr's linked list, within curWindow given the desired dimensions in numDim.
+ */
+bool calculate_intercepts_one_dim(winDetails_ptr curWindow, shawarma_ptr headNode_ptr, shawarma_ptr sourceNode_ptr,
+                                  shawarma_ptr *outHeadNode_ptr)
+{
+    // LOCAL VARIABLES
+    bool success = true;  // Set 
+
+    // DONE
+    return success;
+}
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////// GLOBAL FUNCTIONS /////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1238,6 +1253,62 @@ int move_shawarma(shawarma_ptr node_ptr, hsLineLen_ptr dstCoord_ptr, int maxMove
 
     // DONE
     return numMoves;
+}
+
+
+bool calculate_intercepts(winDetails_ptr curWindow, shawarma_ptr headNode_ptr, shawarma_ptr sourceNode_ptr,
+                          shawarma_ptr *outHeadNode_ptr, int numDim)
+{
+    // LOCAL VARIABLES
+    bool success = false;
+
+    // INPUT VALIDATION
+    if (!curWindow)
+    {
+        HARKLE_ERROR(Harkleswarm, calculate_intercepts, Invalid curWindow pointer);
+    }
+    else if (!headNode_ptr)
+    {
+        HARKLE_ERROR(Harkleswarm, calculate_intercepts, Invalid headNode_ptr pointer);
+    }
+    else if (!sourceNode_ptr)
+    {
+        HARKLE_ERROR(Harkleswarm, calculate_intercepts, Invalid sourceNode_ptr pointer);
+    }
+    else if (!outHeadNode_ptr)
+    {
+        HARKLE_ERROR(Harkleswarm, calculate_intercepts, Invalid outHeadNode_ptr pointer);
+    }
+    else if (*outHeadNode_ptr)
+    {
+        // Out parameter isn't NULL
+        HARKLE_ERROR(Harkleswarm, calculate_intercepts, Detected a memory address in the outHeadNode_ptr out parameter);
+    }
+    else if (1 > numDim)
+    {
+        HARKLE_ERROR(Harkleswarm, calculate_intercepts, Invalid number of dimensions);
+    }
+    else
+    {
+        success = true;
+    }
+
+    // CALL HELPER FUNCTION
+    if (true == success)
+    {
+        switch (numDim)
+        {
+            case 1:
+                break
+            default:
+                HARKLE_ERROR(Harkleswarm, calculate_intercepts, Unsupported number of dimensions);
+                success = false;
+                break
+        }
+    }
+
+    // DONE
+    return success;
 }
 
 

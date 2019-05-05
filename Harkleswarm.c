@@ -321,20 +321,15 @@ int shwarm_one_dim(winDetails_ptr curWindow, shawarma_ptr headNode_ptr, shawarma
             HARKLE_ERROR(Harkleswarm, shwarm_one_dim, find_closest_points encountered an error);
             success = false;
         }
-        else if (0 == numClosePnts)
-        {
-            HARKLE_ERROR(Harkleswarm, shwarm_one_dim, find_closest_points failed);
-            success = false;
-        }
-        else if (2 != numClosePnts)
+        else if (2 < numClosePnts)
         {
             HARKLE_ERROR(Harkleswarm, shwarm_one_dim, find_closest_points found an invalid number of points);
             success = false;
         }
     }
 
-    // 6. Calculate center
-    if (true == success)
+    // 6. Calculate center (as long as we're not on the end)
+    if (true == success && 1 < numClosePnts)
     {
         success = determine_mid_point(&point1, &point2, &midPnt, 0);
 
@@ -344,8 +339,8 @@ int shwarm_one_dim(winDetails_ptr curWindow, shawarma_ptr headNode_ptr, shawarma
         }
     }
 
-    // 7. Move the point closer
-    if (true == success)
+    // 7. Move the point closer (as long as we're not on the end)
+    if (true == success && 1 < numClosePnts)
     {
         numMoves = move_shawarma(sourceNode_ptr, &midPnt, maxMoves);
 
@@ -357,6 +352,12 @@ int shwarm_one_dim(winDetails_ptr curWindow, shawarma_ptr headNode_ptr, shawarma
     }
 
     // DONE
+    // Check for end of line
+    if (true == success && 1 == numClosePnts)
+    {
+        // Found the end of the line and didn't move it
+        numMoves = 0;
+    }
     return numMoves;
 }
 
@@ -419,7 +420,7 @@ int find_closest_one_dim_points(winDetails_ptr curWindow, shawarma_ptr headNode_
         {
             if (tmpNode_ptr != sourceNode_ptr)
             {
-                if (tmpNode_ptr->absY == sourceNode_ptr->absY)
+                if (tmpNode_ptr->absX == sourceNode_ptr->absX)
                 {
                     srchHoriz = false;  // Line is vertical (special edge case)
                     break;
@@ -504,6 +505,7 @@ int find_closest_one_dim_points(winDetails_ptr curWindow, shawarma_ptr headNode_
                     else
                     {
                         HARKLE_ERROR(Harkleswarm, find_closest_one_dim_points, Line is non-vertical but found duplicate x coordinates);
+                        printf("Source (x, y) == (%d, %d) and tmpNode (x, y) == (%d, %d)\n", sourceNode_ptr->absX, sourceNode_ptr->absY, tmpNode_ptr->absX, tmpNode_ptr->absY);  // DEBUGGING
                         numPoints = -1;
                     }
                 }
@@ -555,7 +557,8 @@ int find_closest_one_dim_points(winDetails_ptr curWindow, shawarma_ptr headNode_
                     }
                     else
                     {
-                        HARKLE_ERROR(Harkleswarm, find_closest_one_dim_points, Line is non-vertical but found duplicate x coordinates);
+                        HARKLE_ERROR(Harkleswarm, find_closest_one_dim_points, Line is non-vertical but found duplicate y coordinates);
+                        printf("Source (x, y) == (%d, %d) and tmpNode (x, y) == (%d, %d)\n", sourceNode_ptr->absX, sourceNode_ptr->absY, tmpNode_ptr->absX, tmpNode_ptr->absY);  // DEBUGGING
                         numPoints = -1;
                     }
                 }

@@ -4,8 +4,10 @@
 #include <ncurses.h>            // WINDOW
 #include <stdio.h>              // puts()
 #include <stdbool.h>            // bool, true, false
+#include <unistd.h>             // sleep()
 
 #define NUM_STARTING_POINTS 3  // Number of initial shawarma
+#define SLEEPY_SHAWARMA 1      // Number of seconds to sleep between shwarm iterations
 
 void print_debug_info(winDetails_ptr stdWin, winDetails_ptr fieldWin, shawarma_ptr headNode_ptr);
 
@@ -129,7 +131,8 @@ int main(void)
 shawarma_ptr tmpNode_ptr = headNode_ptr->nextPnt;
 while (tmpNode_ptr)
 {
-    tmpNode_ptr->absY = headNode_ptr->absY;
+    tmpNode_ptr->absX = headNode_ptr->absX;  // Vertical line
+    // tmpNode_ptr->absY = headNode_ptr->absY;  // Horizontal line
     tmpNode_ptr = tmpNode_ptr->nextPnt;
 }
 /* DEBUGGING END */
@@ -158,6 +161,7 @@ while (tmpNode_ptr)
             for (i = 1; i <= curNumPoints; i++)
             {
                 tmpNumMoves = shwarm_it(fieldWin, headNode_ptr, HS_MAX_SWARM_MOVES, i, 1, false);
+                // printf("Node %d was moved %d times.\n", i, tmpNumMoves);  // DEBUGGING
 
                 if (0 > tmpNumMoves)
                 {
@@ -170,6 +174,38 @@ while (tmpNode_ptr)
                 {
                     numMoves += tmpNumMoves;
                 }
+            }
+
+            // Update field window
+            // clear();  // Clear the screen
+            // if (OK != wrefresh(stdWin->win_ptr))  // Print it on the real screen
+            // {
+            //     HARKLE_ERROR(Shwarm_It, main, wrefresh failed on stdWin);
+            //     success = false;
+            // }
+            // else if (OK != wrefresh(fieldWin->win_ptr))  // Print it on the real screen
+            // {
+            //     HARKLE_ERROR(Shwarm_It, main, wrefresh failed on fieldWin);
+            //     success = false;
+            // }
+            if (false == print_plot_list(fieldWin->win_ptr, headNode_ptr))
+            {
+                HARKLE_ERROR(Shwarm_It, main, print_plot_list failed);
+                success = false;
+                print_debug_info(stdWin, fieldWin, headNode_ptr);
+            }
+            else if (OK != wrefresh(fieldWin->win_ptr))  // Print it on the real screen
+            {
+                HARKLE_ERROR(Shwarm_It, main, wrefresh failed on fieldWin);
+                success = false;
+            }
+            else
+            {
+                // 𝄞 Why are you sleepy? ♬
+                // ♩ Sleepy thread ♪
+                // ♭ Thread is sleepy ♫
+                // 𝄫 Sleepy thread ♫
+                sleep(SLEEPY_SHAWARMA);
             }
         }
         while (numMoves && true == success);  // Keep swarming until equilibrium is reached

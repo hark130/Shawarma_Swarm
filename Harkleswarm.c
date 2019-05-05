@@ -360,6 +360,240 @@ int shwarm_one_dim(winDetails_ptr curWindow, shawarma_ptr headNode_ptr, shawarma
     return numMoves;
 }
 
+
+/*
+    PURPOSE - Finds the nearest "up slope" and "down slope" points to sourneNode_ptr within headNode_ptr's linked
+        list and stores the values in coord_arr
+    INPUT
+        curWindow - Pointer to a winDetails struct (used to determine window border points)
+        headNode_ptr - Pointer to the head node of a linked list of shawarma pointers containing available points
+        sourceNode_ptr - shawarma struct pointer to use as the 'origin' point to calculate distances
+        coord_arr - NULL-terminated array of two hsLineLen struct pointers to use as 'out' parameters
+    OUTPUT
+        On success, number of hsLineLen struct pointers populate with points and distances.
+        On error, -1
+    NOTES
+        The closest "left"/"up" point is in coord_arr[0], if applicable, and the closest "right"/"down" point is in coord_arr[1],
+            if applicable.  There are no guarantees that coord_arr[0] has been populated if this function returns 1.
+        If this function returns 1, that means sourceNode_ptr is an end point on the line.  It's possible this means
+            sourceNode_ptr shouldn't be moved.  Let the non-end points on the line achieve equilibrium with respect
+            to the ends of the line.
+        This function assumes that all input validation was accomplished in find_closest_points() and does not
+            perform additional input validation.
+        ONCE THIS FUNCTION IS OPERATING, STRONGLY CONSIDER REFACTORING TO REDUCT DUPLICATE CODE BLOCKS.  FOR INSTANCE, CONSIDER
+            MAKING A hsLineLen_ptr* curLen_arr THAT MIRRORS coord_arr TO SAVE SOME SPECIAL-CASE BRANCHING WITHIN if(true == saveIt).
+ */
+int find_closest_one_dim_points(winDetails_ptr curWindow, shawarma_ptr headNode_ptr, shawarma_ptr sourceNode_ptr, hsLineLen_ptr* coord_arr)
+{
+    // LOCAL VARIABLES
+    int numPoints = -1;                // Should wind up to be 2 unless sourceNode_ptr is an end point
+    bool success = true;               // Set this to false if anything fails
+    bool srchHoriz = true;             // Will search for "left" and "right" points instead of "up"/"down"
+    bool emptyIndex0 = true;           // Indicates coord_arr[0] is empty
+    bool emptyIndex1 = true;           // Indicates coord_arr[1] is empty
+    bool saveIt = false;               // Avoiding "save this point" duplicate code
+    int index = 0;                     // coord_arr index to "saveIt"
+    shawarma_ptr tmpNode_ptr = NULL;   // Iterating variable for the 'in' linked list
+    int tmpVertDist = 0;               // Use this to calculate distance for the special-cased vertical line
+    int vertIndex0Dist = 0;            // Holds the absolute vertical distance of coord_arr[0] for the special-cased vertical line
+    int vertIndex1Dist = 0;            // Holds the absolute vertical distance of coord_arr[1] for the special-cased vertical line
+    // Use this as a temp 'out' parameter for calc_hsLineLen_contents()
+    hsLineLen localLineLen = { 0, 0, 0.0 };
+    // Use this to store the current value of the point in coord_arr[0]
+    hsLineLen bigIndex0LineLen = { 0, 0, 0.0 };
+    // Use this to store the current value of the point in coord_arr[1]
+    hsLineLen bigIndex1LineLen = { 0, 0, 0.0 };
+
+    // FIND POINTS
+    // Verify minimum number of nodes exist
+    if (2 > (get_num_cartCoord_nodes(headNode_ptr) - 1))
+    {
+        HARKLE_ERROR(Harkleswarm, find_closest_one_dim_points, Not enough coord_arr entries);
+    }
+    else
+    {
+        numPoints = 0;
+        // 1. Determine line direction
+        tmpNode_ptr = headNode_ptr;
+        while (tmpNode_ptr)
+        {
+            if (tmpNode_ptr != sourceNode_ptr)
+            {
+                if (tmpNode_ptr->absY == sourceNode_ptr->absY)
+                {
+                    srchHoriz = false;  // Line is vertical (special edge case)
+                    break;
+                }
+                else
+                {
+                    srchHoriz = true;  // Line is not vertical (default case)
+                    break;
+                }
+            }
+            else
+            {
+                tmpNode_ptr = tmpNode_ptr->nextPnt;  // Next node
+            }
+        }
+
+        // 2. Find nearest points on both sides of line from sourceNode_ptr
+        tmpNode_ptr = headNode_ptr;  // Reset temp variable to head node of the linked list
+        while (tmpNode_ptr && true == success && numPoints > -1)
+        {
+            saveIt = false;  // Reset temp variable
+            index = -1;  // Reset temp variable
+
+            if (tmpNode_ptr != sourceNode_ptr)
+            {
+                if (true == srchHoriz)
+                {
+                    // "Left" points go in index 0
+                    if (tmpNode_ptr->absX < sourceNode_ptr->absX)
+                    {
+                        if (true == emptyIndex0)
+                        {
+                            saveIt = true;  // Save tmpNode_ptr to coord_arr
+                            index = 0;  // Store it in coord_arr[0]
+                            numPoints++;  // Not stored yet but this should be fine since it's first
+                            emptyIndex0 = false;  // Update coord_arr[0] state
+                        }
+                        else
+                        {
+                            // Determine if this is closer than index 0
+                            success = calc_hsLineLen_contents(sourceNode_ptr, tmpNode_ptr, &localLineLen);
+
+                            if (false == success)
+                            {
+                                HARKLE_ERROR(Harkleswarm, find_closest_one_dim_points, calc_hsLineLen_contents failed);
+                                numPoints = -1;
+                            }
+                            else if (true == dble_less_than(localLineLen.dist, bigIndex0LineLen.dist, DBL_PRECISION))
+                            {
+                                saveIt = true;  // Save tmpNode_ptr to coord_arr
+                                index = 0;  // Store it in coord_arr[0]
+                            }
+                        }
+                    }
+                    // "Right" points go in index 1
+                    else if (tmpNode_ptr->absX > sourceNode_ptr->absX)
+                    {
+                        if (true == emptyIndex1)
+                        {
+                            saveIt = true;  // Save tmpNode_ptr to coord_arr
+                            index = 1;  // Store it in coord_arr[1]
+                            numPoints++;  // Not stored yet but this should be fine since it's first
+                            emptyIndex1 = false;  // Update coord_arr[1] state
+                        }
+                        else
+                        {
+                            // Determine if this is closer than index 0
+                            success = calc_hsLineLen_contents(sourceNode_ptr, tmpNode_ptr, &localLineLen);
+
+                            if (false == success)
+                            {
+                                HARKLE_ERROR(Harkleswarm, find_closest_one_dim_points, calc_hsLineLen_contents failed);
+                                numPoints = -1;
+                            }
+                            else if (true == dble_less_than(localLineLen.dist, bigIndex1LineLen.dist, DBL_PRECISION))
+                            {
+                                saveIt = true;  // Save tmpNode_ptr to coord_arr
+                                index = 1;  // Store it in coord_arr[1]
+                            }
+                        }
+                    }
+                    else
+                    {
+                        HARKLE_ERROR(Harkleswarm, find_closest_one_dim_points, Line is non-vertical but found duplicate x coordinates);
+                        numPoints = -1;
+                    }
+                }
+                else
+                {
+                    // "Up" points go in index 0
+                    if (tmpNode_ptr->absY > sourceNode_ptr->absY)
+                    {
+                        if (true == emptyIndex0)
+                        {
+                            saveIt = true;  // Save tmpNode_ptr to coord_arr
+                            index = 0;  // Store it in coord_arr[0]
+                            numPoints++;  // Not stored yet but this should be fine since it's first
+                            emptyIndex0 = false;  // Update coord_arr[0] state
+                            vertIndex0Dist = tmpNode_ptr->absY - sourceNode_ptr->absY;
+                        }
+                        else
+                        {
+                            // Determine if this is closer than index 0
+                            if (abs(tmpNode_ptr->absY - sourceNode_ptr->absY) < vertIndex0Dist)
+                            {
+                                saveIt = true;  // Save tmpNode_ptr to coord_arr
+                                index = 0;  // Store it in coord_arr[0]
+                                vertIndex0Dist = abs(tmpNode_ptr->absY - sourceNode_ptr->absY);
+                            }
+                        }
+                    }
+                    // "Down" points go in index 1
+                    else if (tmpNode_ptr->absY < sourceNode_ptr->absY)
+                    {
+                        if (true == emptyIndex1)
+                        {
+                            saveIt = true;  // Save tmpNode_ptr to coord_arr
+                            index = 1;  // Store it in coord_arr[0]
+                            numPoints++;  // Not stored yet but this should be fine since it's first
+                            emptyIndex1 = false;  // Update coord_arr[1] state
+                            vertIndex1Dist = abs(sourceNode_ptr->absY - tmpNode_ptr->absY);
+                        }
+                        else
+                        {
+                            // Determine if this is closer than index 0
+                            if (abs(sourceNode_ptr->absY - tmpNode_ptr->absY) < vertIndex1Dist)
+                            {
+                                saveIt = true;  // Save tmpNode_ptr to coord_arr
+                                index = 1;  // Store it in coord_arr[0]
+                                vertIndex1Dist = abs(sourceNode_ptr->absY - tmpNode_ptr->absY);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        HARKLE_ERROR(Harkleswarm, find_closest_one_dim_points, Line is non-vertical but found duplicate x coordinates);
+                        numPoints = -1;
+                    }
+                }
+
+                // Should we save it?
+                if (true == saveIt && numPoints > -1 && true == success)
+                {
+                    success = calc_hsLineLen_contents(sourceNode_ptr, tmpNode_ptr, coord_arr[index]);
+
+                    if (false == success)
+                    {
+                        HARKLE_ERROR(Harkleswarm, find_closest_one_dim_points, calc_hsLineLen_contents failed);
+                        numPoints = -1;
+                    }
+                    else if (true == srchHoriz && 0 == index)
+                    {
+                        bigIndex0LineLen.xCoord = coord_arr[index]->xCoord;
+                        bigIndex0LineLen.yCoord = coord_arr[index]->yCoord;
+                        bigIndex0LineLen.dist = coord_arr[index]->dist;
+                    }
+                    else if (true == srchHoriz && 1 == index)
+                    {
+                        bigIndex1LineLen.xCoord = coord_arr[index]->xCoord;
+                        bigIndex1LineLen.yCoord = coord_arr[index]->yCoord;
+                        bigIndex1LineLen.dist = coord_arr[index]->dist;
+                    }
+                }
+            }
+
+            tmpNode_ptr = tmpNode_ptr->nextPnt;  // Next node
+        }
+    }
+
+    // DONE
+    return numPoints;
+}
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////// GLOBAL FUNCTIONS /////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -651,6 +885,7 @@ int find_closest_points(winDetails_ptr curWindow, shawarma_ptr headNode_ptr, sha
 {
     // LOCAL VARIABLES
     int numPoints = -1;                // -1 on error, number of points calculated on success
+    int numDims = 0;                   // Number of dimensions in which to calculate geometry
     bool success = true;               // Set this to false if anything fails
     int i = 0;                         // Iterating variable for loops
     shawarma_ptr tmpNode_ptr = NULL;   // Iterating variable for the 'in' linked list
@@ -692,113 +927,32 @@ int find_closest_points(winDetails_ptr curWindow, shawarma_ptr headNode_ptr, sha
     {
         // 1. Determine intended dimensions
         numPoints = count_entries(coord_arr, sizeof(hsLineLen_ptr));
-        printf("Found %d entries!\n", numPoints);  // DEBUGGING
+        numDims = numPoints - 1;
+        // printf("Found %d entries!\n", numPoints);  // DEBUGGING
 
-        // 2. Verify minimum number of nodes exist
-        if (numPoints > (get_num_cartCoord_nodes(headNode_ptr) - 1))
+        // 2. Call dimensionally appropriate helper function
+        switch (numDims)
         {
-            HARKLE_ERROR(Harkleswarm, find_closest_points, Not enough coord_arr entries);
-            numPoints = -1;
-        }
-        else
-        {
-            // 3. Find nearest points given dimensions
-            tmpNum = 0;
-            tmpNode_ptr = headNode_ptr;
-            tmpArr_ptr = coord_arr;
+            case (1):
+                // int find_closest_one_dim_points(winDetails_ptr curWindow, shawarma_ptr headNode_ptr, shawarma_ptr sourceNode_ptr, hsLineLen_ptr* coord_arr)
+                numPoints = find_closest_one_dim_points(curWindow, headNode_ptr, sourceNode_ptr, coord_arr);
 
-            // A. Fill the array with the first "numPoints" number of node entries
-            tmpNum = 0;  // Reset temp variable
-            printf("BEGINNING: Using sourceNode_ptr (%p) (x, y) == (%d, %d)\n", sourceNode_ptr, sourceNode_ptr->absX, sourceNode_ptr->absY);  // DEBUGGING
-            while (tmpNode_ptr && tmpNum < numPoints && true == success)
-            {
-                // printf("coord_arr[0] == (%d, %d)\n", coord_arr[0]->xCoord, coord_arr[0]->yCoord);  // DEBUGGING
-                // printf("coord_arr[1] == (%d, %d)\n", coord_arr[1]->xCoord, coord_arr[1]->yCoord);  // DEBUGGING
-                if (tmpNode_ptr != sourceNode_ptr)
+                if (0 > numPoints)
                 {
-                    printf("ROUND 1: Processing tmpNode_ptr (%p) (x, y) == (%d, %d)\n", tmpNode_ptr, tmpNode_ptr->absX, tmpNode_ptr->absY);  // DEBUGGING
-                    // printf("BEFORE\n");  // DEBUGGING
-                    // printf("coord_arr[0] == (%d, %d)\n", coord_arr[0]->xCoord, coord_arr[0]->yCoord);  // DEBUGGING
-                    // printf("coord_arr[1] == (%d, %d)\n", coord_arr[1]->xCoord, coord_arr[1]->yCoord);  // DEBUGGING
-                    success = calc_hsLineLen_contents(sourceNode_ptr, tmpNode_ptr, *tmpArr_ptr);
-                    // printf("AFTER\n");  // DEBUGGING
-                    // printf("coord_arr[0] == (%d, %d)\n", coord_arr[0]->xCoord, coord_arr[0]->yCoord);  // DEBUGGING
-                    // printf("coord_arr[1] == (%d, %d)\n", coord_arr[1]->xCoord, coord_arr[1]->yCoord);  // DEBUGGING
-
-                    if (false == success)
-                    {
-                        HARKLE_ERROR(Harkleswarm, find_closest_points, calc_hsLineLen_contents failed);
-                        numPoints = 0;
-                    }
-                    else
-                    {
-                        tmpNum++;
-                        // New biggest distance?
-                        if (true == dble_greater_than((*tmpArr_ptr)->dist, biggestLineLen.dist, DBL_PRECISION))
-                        {
-                            biggestLineLen.xCoord = (*tmpArr_ptr)->xCoord;
-                            biggestLineLen.yCoord = (*tmpArr_ptr)->yCoord;
-                            biggestLineLen.dist = (*tmpArr_ptr)->dist;
-                        }
-                        tmpArr_ptr++;  // NOW increment
-                    }
+                    HARKLE_ERROR(Harkleswarm, find_closest_points, find_closest_one_dim_points failed);
+                    success = false;
                 }
-
-                tmpNode_ptr = tmpNode_ptr->nextPnt;
-            }
-            printf("ROUND 1 Complete\n");  // DEBUGGING
-            tmpArr_ptr = NULL;  // Don't use this anymore
-
-            // B. Check the rest of the linked list for closer entries
-            while (tmpNode_ptr && true == success)
-            {
-                if (tmpNode_ptr != sourceNode_ptr)
+                else if ((numDims + 1) < numPoints)
                 {
-                    printf("ROUND 2: Processing tmpNode_ptr (%p) (x, y) == (%d, %d)\n", tmpNode_ptr, tmpNode_ptr->absX, tmpNode_ptr->absY);  // DEBUGGING
-                    // Calculate length
-                    // printf("BEFORE\n");  // DEBUGGING
-                    // printf("coord_arr[0] == (%d, %d)\n", coord_arr[0]->xCoord, coord_arr[0]->yCoord);  // DEBUGGING
-                    // printf("coord_arr[1] == (%d, %d)\n", coord_arr[1]->xCoord, coord_arr[1]->yCoord);  // DEBUGGING
-                    success = calc_hsLineLen_contents(sourceNode_ptr, tmpNode_ptr, &localLineLen);
-                    // printf("AFTER\n");  // DEBUGGING
-                    // printf("coord_arr[0] == (%d, %d)\n", coord_arr[0]->xCoord, coord_arr[0]->yCoord);  // DEBUGGING
-                    // printf("coord_arr[1] == (%d, %d)\n", coord_arr[1]->xCoord, coord_arr[1]->yCoord);  // DEBUGGING
-
-                    if (false == success)
-                    {
-                        HARKLE_ERROR(Harkleswarm, find_closest_points, calc_hsLineLen_contents failed);
-                        numPoints = 0;
-                    }
-                    else
-                    {
-                        if (true == dble_less_than(localLineLen.dist, biggestLineLen.dist, DBL_PRECISION))
-                        {
-                            // Replace entry in coord_arr with localLineLen data
-                            success = replace_hsLineLen_array_entry(&biggestLineLen, &localLineLen, coord_arr);
-
-                            if (false == success)
-                            {
-                                HARKLE_ERROR(Harkleswarm, find_closest_points, replace_hsLineLen_array_entry failed);
-                                numPoints = 0;
-                            }
-                            else
-                            {
-                                // Replace "biggest" line length local variable with the "new biggest" line length
-                                success = find_longest_entry(coord_arr, &biggestLineLen, DBL_PRECISION);
-
-                                if (false == success)
-                                {
-                                    HARKLE_ERROR(Harkleswarm, find_closest_points, find_longest_entry failed);
-                                    numPoints = 0;
-                                }
-                            }
-                        }
-                    }
+                    HARKLE_ERROR(Harkleswarm, find_closest_points, find_closest_one_dim_points found extra points);
+                    success = false;
                 }
-
-                tmpNode_ptr = tmpNode_ptr->nextPnt;
-            }
-            printf("ROUND 2 Complete\n");  // DEBUGGING
+                break;
+            default:
+                HARKLE_ERROR(Harkleswarm, find_closest_points, Unsupported number of dimensions);
+                success = false;
+                numPoints = -1;
+                break;
         }
     }
     

@@ -234,12 +234,12 @@ bool find_longest_entry(hsLineLen_ptr* coord_arr, hsLineLen_ptr outNode_ptr, int
 
 
 /*
-    PURPOSE - Update the coordiantes of shawarma node 'srcNum' by moving it 'maxMoves' toward equilibrium in
+    PURPOSE - Update the coordiantes of shawarma node sourceNode_ptr by moving it 'maxMoves' toward equilibrium in
         one (1) dimension
     INPUT
         curWindow - Pointer to a winDetails struct (used to determine window border points)
         headNode_ptr - Pointer to the head node of a linked list of shawarma pointers containing available points
-        sourceNode_ptr - shawarma struct pointer to use as the 'origin' point to calculate distances
+        sourceNode_ptr - shawarma struct pointer to use as the 'origin' point to calculate distances and move
         maxMoves - Number of one-dimensional moves, regardless of dimension, the node may move to pursue equilibrium
         intercepts - If true, dimensional intercepts will be treated as points for the purposes of equilibrium
     OUTPUT
@@ -339,7 +339,22 @@ int shwarm_one_dim(winDetails_ptr curWindow, shawarma_ptr headNode_ptr, shawarma
         }
     }
 
-    // 7. Move the point closer (as long as we're not on the end)
+    // 7. Clear the old point before the move (as long as we're not on the end)
+    if (true == success && 1 < numClosePnts)
+    {
+        // Clear the old point
+        // NOTE: This was destroying the window border.
+        //       Function works but I need to find another way to not leave
+        //       a trail behind.
+        // success = clear_this_coord(curWindow, sourceNode_ptr);
+
+        if (false == success)
+        {
+            HARKLE_ERROR(Harkleswarm, shwarm_one_dim, clear_this_coord failed);
+        }
+    }
+
+    // 8. Move the point closer (as long as we're not on the end)
     if (true == success && 1 < numClosePnts)
     {
         numMoves = move_shawarma(sourceNode_ptr, &midPnt, maxMoves);
@@ -1151,41 +1166,45 @@ int move_shawarma(shawarma_ptr node_ptr, hsLineLen_ptr dstCoord_ptr, int maxMove
         while (numMoves < maxMoves)
         {
             // Update distance
-            dstCoord_ptr->dist = calc_int_point_dist(node_ptr->absX, node_ptr->absY,
-                                                     dstCoord_ptr->xCoord, dstCoord_ptr->yCoord);
+            // dstCoord_ptr->dist = calc_int_point_dist(node_ptr->absX, node_ptr->absY,
+            //                                          dstCoord_ptr->xCoord, dstCoord_ptr->yCoord);
 
-            // Ensure points don't "consume" each other
-            if (true == dble_less_than(dstCoord_ptr->dist, 2.0, DBL_PRECISION))
-            // if (1 == dstCoord_ptr->dist)
-            {
-                // // Check for the "diagonally adjacent point" edge case
-                // if (dstCoord_ptr->xCoord == node_ptr->absX
-                //     || dstCoord_ptr->yCoord == node_ptr->absY)
-                // {
-                //     break;  // Done.
-                // }
-                puts("Done moving because distance is 1");
-                break;  // Troubleshooting a BUG
-            }
+            // // Ensure points don't "consume" each other
+            // if (true == dble_less_than(dstCoord_ptr->dist, 2.0, DBL_PRECISION))
+            // // if (1 == dstCoord_ptr->dist)
+            // {
+            //     // // Check for the "diagonally adjacent point" edge case
+            //     // if (dstCoord_ptr->xCoord == node_ptr->absX
+            //     //     || dstCoord_ptr->yCoord == node_ptr->absY)
+            //     // {
+            //     //     break;  // Done.
+            //     // }
+            //     puts("Done moving because distance is 1");
+            //     break;  // Troubleshooting a BUG
+            // }
             // Move it
             absXDist = abs(dstCoord_ptr->xCoord - node_ptr->absX);
             absYDist = abs(dstCoord_ptr->yCoord - node_ptr->absY);
-            printf("destination (x, y) == (%d, %d) moving node (x, y) == (%d, %d)\n", dstCoord_ptr->xCoord, dstCoord_ptr->yCoord, node_ptr->absX, node_ptr->absY);  // DEBUGGING
-            printf("xCoord diff == %d and the yCoord diff == %d\n", absXDist, absYDist);  // DEBUGGING
-            if (absXDist >= absYDist && absXDist)
+            if (0 == absXDist && 0 == absYDist)
+            {
+                break;
+            }
+            // printf("destination (x, y) == (%d, %d) moving node (x, y) == (%d, %d)\n", dstCoord_ptr->xCoord, dstCoord_ptr->yCoord, node_ptr->absX, node_ptr->absY);  // DEBUGGING
+            // printf("xCoord diff == %d and the yCoord diff == %d\n", absXDist, absYDist);  // DEBUGGING
+            else if (absXDist >= absYDist && absXDist)
             {
                 // X coordinate
                 if (node_ptr->absX > dstCoord_ptr->xCoord)
                 {
-                    printf("Moving node from (x, y) == (%d, %d)", node_ptr->absX, node_ptr->absY);  // DEBUGGING
+                    // printf("Moving node from (x, y) == (%d, %d)", node_ptr->absX, node_ptr->absY);  // DEBUGGING
                     node_ptr->absX--;
-                    printf(" to (x, y) == (%d, %d)\n", node_ptr->absX, node_ptr->absY);  // DEBUGGING
+                    // printf(" to (x, y) == (%d, %d)\n", node_ptr->absX, node_ptr->absY);  // DEBUGGING
                 }
                 else if (node_ptr->absX < dstCoord_ptr->xCoord)
                 {
-                    printf("Moving node from (x, y) == (%d, %d)", node_ptr->absX, node_ptr->absY);  // DEBUGGING
+                    // printf("Moving node from (x, y) == (%d, %d)", node_ptr->absX, node_ptr->absY);  // DEBUGGING
                     node_ptr->absX++;
-                    printf(" to (x, y) == (%d, %d)\n", node_ptr->absX, node_ptr->absY);  // DEBUGGING
+                    // printf(" to (x, y) == (%d, %d)\n", node_ptr->absX, node_ptr->absY);  // DEBUGGING
                 }
                 else
                 {
@@ -1197,15 +1216,15 @@ int move_shawarma(shawarma_ptr node_ptr, hsLineLen_ptr dstCoord_ptr, int maxMove
                 // Y coordinate
                 if (node_ptr->absY > dstCoord_ptr->yCoord)
                 {
-                    printf("Moving node from (x, y) == (%d, %d)", node_ptr->absX, node_ptr->absY);  // DEBUGGING
+                    // printf("Moving node from (x, y) == (%d, %d)", node_ptr->absX, node_ptr->absY);  // DEBUGGING
                     node_ptr->absY--;
-                    printf(" to (x, y) == (%d, %d)\n", node_ptr->absX, node_ptr->absY);  // DEBUGGING
+                    // printf(" to (x, y) == (%d, %d)\n", node_ptr->absX, node_ptr->absY);  // DEBUGGING
                 }
                 else if (node_ptr->absY < dstCoord_ptr->yCoord)
                 {
-                    printf("Moving node from (x, y) == (%d, %d)", node_ptr->absX, node_ptr->absY);  // DEBUGGING
+                    // printf("Moving node from (x, y) == (%d, %d)", node_ptr->absX, node_ptr->absY);  // DEBUGGING
                     node_ptr->absY++;
-                    printf(" to (x, y) == (%d, %d)\n", node_ptr->absX, node_ptr->absY);  // DEBUGGING
+                    // printf(" to (x, y) == (%d, %d)\n", node_ptr->absX, node_ptr->absY);  // DEBUGGING
                 }
                 else
                 {

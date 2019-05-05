@@ -346,7 +346,7 @@ int shwarm_one_dim(winDetails_ptr curWindow, shawarma_ptr headNode_ptr, shawarma
         // NOTE: This was destroying the window border.
         //       Function works but I need to find another way to not leave
         //       a trail behind.
-        // success = clear_this_coord(curWindow, sourceNode_ptr);
+        success = clear_this_coord(curWindow, sourceNode_ptr);
 
         if (false == success)
         {

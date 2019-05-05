@@ -128,11 +128,18 @@ int main(void)
     if (true == success)
     {
 /* DEBUGGING BEGIN */
+headNode_ptr->absX = fieldWin->leftC + 1 - HS_OUTER_BORDER_WIDTH_H;
+headNode_ptr->absY = fieldWin->upperR + 1 - HS_OUTER_BORDER_WIDTH_V;
 shawarma_ptr tmpNode_ptr = headNode_ptr->nextPnt;
+int offset = 10;
 while (tmpNode_ptr)
 {
-    tmpNode_ptr->absX = headNode_ptr->absX;  // Vertical line
+    // tmpNode_ptr->absX = headNode_ptr->absX;  // Vertical line
     // tmpNode_ptr->absY = headNode_ptr->absY;  // Horizontal line
+    // Slanted line
+    tmpNode_ptr->absX = headNode_ptr->absY + offset;  // Slanted line
+    tmpNode_ptr->absY = headNode_ptr->absY + offset;  // Slanted line
+    offset += 20;  // Slanted line
     tmpNode_ptr = tmpNode_ptr->nextPnt;
 }
 /* DEBUGGING END */

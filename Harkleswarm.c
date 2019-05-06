@@ -385,13 +385,13 @@ int shwarm_one_dim(winDetails_ptr curWindow, shawarma_ptr headNode_ptr, shawarma
         numMoves = 0;
     }
     // Remove intercept nodes (if applicable)
-    if (intHeadNode_ptr)
+    if (intNode_ptr)
     {
         tmpNode_ptr = headNode_ptr;
 
         while (tmpNode_ptr)
         {
-            if (tmpNode_ptr->nextPnt == intHeadNode_ptr)
+            if (tmpNode_ptr->nextPnt == intNode_ptr)
             {
                 if (false == free_shawarma_linked_list(&(tmpNode_ptr->nextPnt)))
                 {
@@ -400,7 +400,7 @@ int shwarm_one_dim(winDetails_ptr curWindow, shawarma_ptr headNode_ptr, shawarma
                 }
                 else
                 {
-                    intHeadNode_ptr = NULL;
+                    intNode_ptr = NULL;
                     break;
                 }
             }
@@ -408,7 +408,7 @@ int shwarm_one_dim(winDetails_ptr curWindow, shawarma_ptr headNode_ptr, shawarma
             tmpNode_ptr = tmpNode_ptr->nextPnt;
         }
 
-        if (intHeadNode_ptr)
+        if (intNode_ptr)
         {
             HARKLE_ERROR(Harkleswarm, shwarm_one_dim, Failed to free the intercept linked list);
             success = false;
@@ -1486,7 +1486,6 @@ bool calculate_line_intercepts(winDetails_ptr curWindow, shawarma_ptr sourceNode
 {
     // LOCAL VARIABLES
     bool success = false;  // Indicates success or failure of the function
-    double slope = 0.0;    // Slope of the first two nodes
 
     // INPUT VALIDATION
     if (!curWindow)

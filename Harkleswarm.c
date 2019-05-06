@@ -256,6 +256,8 @@ int shwarm_one_dim(winDetails_ptr curWindow, shawarma_ptr headNode_ptr, shawarma
     bool success = true;   // Prove this wrong
     double slope = 0.0;    // Store slope here
     int numClosePnts = 0;  // Number of points that find_closest_points() found
+    shawarma_ptr intNode_ptr = NULL;   // Head node for the intercept head node pointer
+    shawarma_ptr tmpNode_ptr = NULL;   // Iterating variable
     hsLineLen point1 = { 0, 0, 0.0 };  // Out parameter for find_closest_points()
     hsLineLen point2 = { 0, 0, 0.0 };  // Out parameter for find_closest_points()
     hsLineLen midPnt = { 0, 0, 0.0 };  // Out parameter for determine_mid_point()
@@ -300,6 +302,18 @@ int shwarm_one_dim(winDetails_ptr curWindow, shawarma_ptr headNode_ptr, shawarma
         //      B. Use that function to populate new shawarma nodes added to the end of the linked list
         //      C. Let find_closest_point() do what it does
         //      D. At the end of shwarm_one_dim(), remove & free those temporary "intercept" shawarma nodes from the linked list
+// bool calculate_intercepts(winDetails_ptr curWindow, shawarma_ptr headNode_ptr, shawarma_ptr sourceNode_ptr, shawarma_ptr *outHeadNode_ptr, int numDim);
+        success = calculate_intercepts(curWindow, headNode_ptr, sourceNode_ptr, &intNode_ptr, 1);
+
+        if (false == success)
+        {
+            HARKLE_ERROR(Harkleswarm, shwarm_one_dim, calculate_intercepts failed);
+        }
+        else if (headNode_ptr != add_cartCoord_node(headNode_ptr, intNode_ptr, 0))
+        {
+            HARKLE_ERROR(Harkleswarm, shwarm_one_dim, Failed to add intercept nodes to the tail node);
+            success = false;
+        }
     }
 
     // 5. Find closest points
@@ -370,6 +384,37 @@ int shwarm_one_dim(winDetails_ptr curWindow, shawarma_ptr headNode_ptr, shawarma
         // Found the end of the line and didn't move it
         numMoves = 0;
     }
+    // Remove intercept nodes (if applicable)
+    if (intHeadNode_ptr)
+    {
+        tmpNode_ptr = headNode_ptr;
+
+        while (tmpNode_ptr)
+        {
+            if (tmpNode_ptr->nextPnt == intHeadNode_ptr)
+            {
+                if (false == free_shawarma_linked_list(&(tmpNode_ptr->nextPnt)))
+                {
+                    HARKLE_ERROR(Harkleswarm, shwarm_one_dim, free_shawarma_linked_list failed);
+                    success = false;
+                }
+                else
+                {
+                    intHeadNode_ptr = NULL;
+                    break;
+                }
+            }
+
+            tmpNode_ptr = tmpNode_ptr->nextPnt;
+        }
+
+        if (intHeadNode_ptr)
+        {
+            HARKLE_ERROR(Harkleswarm, shwarm_one_dim, Failed to free the intercept linked list);
+            success = false;
+        }
+    }
+
     return numMoves;
 }
 
@@ -612,12 +657,128 @@ int find_closest_one_dim_points(winDetails_ptr curWindow, shawarma_ptr headNode_
 /*
     PURPOSE - Create a linked list of shawarma nodes holding the graph intercepts for sourceNode_ptr, a node
         in headNode_ptr's linked list, within curWindow given the desired dimensions in numDim.
+    INPUT
+        curWindow - Pointer to a winDetails struct (used to determine window border points)
+        headNode_ptr - Pointer to the head node of a linked list of shawarma pointers containing existing points
+        outHeadNode_ptr - Pointer to a location to store the head node of the linked list of intercepts
+    NOTES
+        This function only calculates line intercepts
+        No other input validation is done in this function.  It is assumed that the calling function validated
+            all the parameters passed here.
+
  */
-bool calculate_intercepts_one_dim(winDetails_ptr curWindow, shawarma_ptr headNode_ptr, shawarma_ptr sourceNode_ptr,
-                                  shawarma_ptr *outHeadNode_ptr)
+bool calculate_intercepts_one_dim(winDetails_ptr curWindow, shawarma_ptr headNode_ptr, shawarma_ptr *outHeadNode_ptr)
 {
     // LOCAL VARIABLES
-    bool success = true;  // Set 
+    bool success = true;  // Indicates function success
+    double slope = 0.0;   // Calculated slope of the line formed by the linked list at headNode_ptr
+    shawarma_ptr intHeadNode_ptr = NULL;  // Allocate the new 'intercepts' head node pointer here
+    shawarma_ptr tmpNode_ptr = NULL;      // Temporary shawarma pointer variable
+
+    // INPUT VALIDATION
+    if (2 > get_num_cartCoord_nodes(headNode_ptr))
+    {
+        HARKLE_ERROR(Harkleswarm, calculate_intercepts_one_dim, Not enough points to form a line);
+        success = false;
+    }
+
+    // CALCULATE INTERCEPTS
+    if (true == success)
+    {
+        // 1. Calcualte the slope
+        slope = calc_int_point_slope(headNode_ptr->absX, headNode_ptr->absY,
+                                     headNode_ptr->nextPnt->absX, headNode_ptr->nextPnt->absY);
+
+        // 2. Verify line
+        success = verify_line(headNode_ptr, slope, DBL_PRECISION);
+
+        if (false == success)
+        {
+            HARKLE_ERROR(Harkleswarm, calculate_intercepts_one_dim, This is not a line);
+        }
+    }
+
+    // 3. Allocate nodes
+    if (true == success)
+    {
+        // Head node
+        tmpNode_ptr = build_new_cartCoord_struct(0, 0, 0, 0);
+
+        if (!tmpNode_ptr)
+        {
+            HARKLE_ERROR(Harkleswarm, calculate_intercepts_one_dim, build_new_cartCoord_struct failed);
+            success = false;
+        }
+        else
+        {
+            intHeadNode_ptr = tmpNode_ptr;
+            tmpNode_ptr = NULL;
+        }
+    }
+
+    if (true == success)
+    {
+        // Second node
+        tmpNode_ptr = build_new_cartCoord_struct(0, 0, 0, 0);
+
+        if (!tmpNode_ptr)
+        {
+            HARKLE_ERROR(Harkleswarm, calculate_intercepts_one_dim, build_new_cartCoord_struct failed);
+            success = false;
+        }
+        else
+        {
+            if (intHeadNode_ptr != add_cartCoord_node(intHeadNode_ptr, tmpNode_ptr, 0))
+            {
+                HARKLE_ERROR(Harkleswarm, calculate_intercepts_one_dim, build_new_cartCoord_struct failed);
+                success = false;
+            }
+            else
+            {
+                tmpNode_ptr = NULL;
+            }
+        }
+    }
+
+    // 4. Calculate line intercepts
+    if (true == success)
+    {
+        // Vertical line
+        if (headNode_ptr->absX == headNode_ptr->nextPnt->absX)
+        {
+            // Top intercept
+            intHeadNode_ptr->absX = headNode_ptr->absX;
+            intHeadNode_ptr->absY = curWindow->upperR;
+            // Bottom intercept
+            intHeadNode_ptr->nextPnt->absX = headNode_ptr->absX;
+            intHeadNode_ptr->nextPnt->absY = curWindow ->upperR + curWindow->nRows;
+        }
+        else
+        {
+            success = calculate_line_intercepts(curWindow, headNode_ptr, *outHeadNode_ptr, slope);
+
+            if (false == success)
+            {
+                HARKLE_ERROR(Harkleswarm, calculate_intercepts_one_dim, calculate_line_intercepts failed);
+            }
+        }
+    }
+
+    // CLEAN UP
+    if (true == success)
+    {
+        *outHeadNode_ptr = intHeadNode_ptr;
+    }
+    else
+    {
+        if (headNode_ptr)
+        {
+            if (false == free_cardCoord_linked_list(&headNode_ptr))
+            {
+                HARKLE_ERROR(Harkleswarm, calculate_intercepts_one_dim, free_cardCoord_linked_list failed);
+            }
+        }
+    }
 
     // DONE
     return success;
@@ -1260,7 +1421,7 @@ bool calculate_intercepts(winDetails_ptr curWindow, shawarma_ptr headNode_ptr, s
                           shawarma_ptr *outHeadNode_ptr, int numDim)
 {
     // LOCAL VARIABLES
-    bool success = false;
+    bool success = false;  // Return value of the dimensionally relevant helper function
 
     // INPUT VALIDATION
     if (!curWindow)
@@ -1299,12 +1460,61 @@ bool calculate_intercepts(winDetails_ptr curWindow, shawarma_ptr headNode_ptr, s
         switch (numDim)
         {
             case 1:
-                break
+                success = calculate_intercepts_one_dim(curWindow, headNode_ptr, outHeadNode_ptr);
+
+                if (false == success)
+                {
+                    HARKLE_ERROR(Harkleswarm, calculate_intercepts, calculate_intercepts_one_dim failed);
+                    success = false;
+                }
+                break;
             default:
                 HARKLE_ERROR(Harkleswarm, calculate_intercepts, Unsupported number of dimensions);
                 success = false;
-                break
+                break;
         }
+    }
+
+    // DONE
+    return success;
+}
+
+
+
+bool calculate_line_intercepts(winDetails_ptr curWindow, shawarma_ptr sourceNode_ptr,
+                               shawarma_ptr outHeadNode_ptr, double slope)
+{
+    // LOCAL VARIABLES
+    bool success = false;  // Indicates success or failure of the function
+    double slope = 0.0;    // Slope of the first two nodes
+
+    // INPUT VALIDATION
+    if (!curWindow)
+    {
+        HARKLE_ERROR(Harkleswarm, calculate_line_intercepts, Invalid curWindow pointer);
+    }
+    else if (!sourceNode_ptr)
+    {
+        HARKLE_ERROR(Harkleswarm, calculate_line_intercepts, Invalid sourceNode_ptr pointer);
+    }
+    else if (!outHeadNode_ptr)
+    {
+        HARKLE_ERROR(Harkleswarm, calculate_line_intercepts, Invalid outHeadNode_ptr pointer);
+    }
+    else if (2 > get_num_cartCoord_nodes(outHeadNode_ptr))
+    {
+        HARKLE_ERROR(Harkleswarm, calculate_line_intercepts, Not enough nodes);
+    }
+    else
+    {
+        success = true;
+    }
+
+    // CALCULATE LINE INTERCEPTS
+    if (true == success)
+    {
+        // TO DO: DON'T DO NOW
+        // Get the line formula
     }
 
     // DONE

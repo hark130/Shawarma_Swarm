@@ -39,6 +39,7 @@ Make 'swarms' self-organize in a variety of dimensions.
     [ ] Modify the library to 'hide' functions callers don't need (e.g., shwarm_one_dim())
     [ ] Refactor library functions with duplicate code (e.g., find_closest_one_dim_points())
     [ ] Consider moving 'local' library function definitions to the end and adding prototypes at the top
+    [ ] Consider refactoring calc_int_point_slope() to better handle vertical lines. That or write a check_vert_line() function.
 [X] Main binary
 
     [X] Start shwarm_it.c

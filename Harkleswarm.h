@@ -222,6 +222,11 @@ int move_shawarma(shawarma_ptr node_ptr, hsLineLen_ptr dstCoord_ptr, int maxMove
     PURPOSE - Create a linked list of shawarma nodes holding the graph intercepts for sourceNode_ptr, a node
         in headNode_ptr's linked list, within curWindow given the desired dimensions in numDim.
     INPUT
+        curWindow - Pointer to a winDetails struct (used to determine window border points)
+        headNode_ptr - Pointer to the head node of a linked list of shawarma pointers containing available points
+        sourceNode_ptr - shawarma struct pointer to use as the 'origin' point to calculate intercepts
+        outHeadNode_ptr - 'Out' parameter to store the head node of the newly allocate linked list of intercepts
+        numDim - Number of dimensions to calculate intercepts for
     OUTPUT
         On success, true (and outHeadNode_ptr holds a pointer to a linked list holding the intercepts)
         On failure, false
@@ -236,6 +241,20 @@ int move_shawarma(shawarma_ptr node_ptr, hsLineLen_ptr dstCoord_ptr, int maxMove
  */
 bool calculate_intercepts(winDetails_ptr curWindow, shawarma_ptr headNode_ptr, shawarma_ptr sourceNode_ptr,
                           shawarma_ptr *outHeadNode_ptr, int numDim);
+
+
+/*
+    PURPOSE - Calculate the line intercepts for sourceNode_ptr within curWindow and store the coordinates
+        inside the linked list found at outHeadNode_ptr
+    INPUT
+        curWindow - Pointer to a winDetails struct (used to determine window border points)
+        sourceNode_ptr - shawarma struct pointer to use as the 'origin' point to calculate intercepts
+        outHeadNode_ptr - Linked list of 'out' parameter nodes in which to store the line intercepts
+        slope - Slope used to determine the intercepts from sourceNode_ptr
+
+ */
+bool calculate_line_intercepts(winDetails_ptr curWindow, shawarma_ptr sourceNode_ptr,
+                               shawarma_ptr outHeadNode_ptr, double slope);
 
 
 /*

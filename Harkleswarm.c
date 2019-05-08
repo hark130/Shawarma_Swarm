@@ -295,14 +295,6 @@ int shwarm_one_dim(winDetails_ptr curWindow, shawarma_ptr headNode_ptr, shawarma
     // 4. Consider intercepts
     if (true == success && true == intercepts)
     {
-        // TO DO: DON'T DO NOW
-        // Add this as a p1-1 feature
-        // If I had to do it now:
-        //      A. write a line_intercept() function in Harklemath.*
-        //      B. Use that function to populate new shawarma nodes added to the end of the linked list
-        //      C. Let find_closest_point() do what it does
-        //      D. At the end of shwarm_one_dim(), remove & free those temporary "intercept" shawarma nodes from the linked list
-// bool calculate_intercepts(winDetails_ptr curWindow, shawarma_ptr headNode_ptr, shawarma_ptr sourceNode_ptr, shawarma_ptr *outHeadNode_ptr, int numDim);
         success = calculate_intercepts(curWindow, headNode_ptr, sourceNode_ptr, &intNode_ptr, 1);
 
         if (false == success)
@@ -755,7 +747,7 @@ bool calculate_intercepts_one_dim(winDetails_ptr curWindow, shawarma_ptr headNod
         }
         else
         {
-            success = calculate_line_intercepts(curWindow, headNode_ptr, *outHeadNode_ptr, slope);
+            success = calculate_line_intercepts(curWindow, headNode_ptr, intHeadNode_ptr, slope);
 
             if (false == success)
             {
@@ -771,9 +763,9 @@ bool calculate_intercepts_one_dim(winDetails_ptr curWindow, shawarma_ptr headNod
     }
     else
     {
-        if (headNode_ptr)
+        if (intHeadNode_ptr)
         {
-            if (false == free_cardCoord_linked_list(&headNode_ptr))
+            if (false == free_cardCoord_linked_list(&intHeadNode_ptr))
             {
                 HARKLE_ERROR(Harkleswarm, calculate_intercepts_one_dim, free_cardCoord_linked_list failed);
             }

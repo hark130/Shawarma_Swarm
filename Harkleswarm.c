@@ -1480,12 +1480,20 @@ bool calculate_intercepts(winDetails_ptr curWindow, shawarma_ptr headNode_ptr, s
 }
 
 
-
 bool calculate_line_intercepts(winDetails_ptr curWindow, shawarma_ptr sourceNode_ptr,
                                shawarma_ptr outHeadNode_ptr, double slope)
 {
     // LOCAL VARIABLES
     bool success = false;  // Indicates success or failure of the function
+    int lowerX = 0;                   // curWindow->leftC
+    int upperX = 0;                   // curWindow->leftC + curWindow->nCols - 1
+    int lowerY = 0;                   // curWindow->upperR
+    int upperY = 0;                   // curWindow->upperR + curWindow->nRows - 1
+    hmLineLen point1 = {0, 0, 0.0};   // (left col, ?)
+    hmLineLen point2 = {0, 0, 0.0};   // (right col, ?)
+    hmLineLen point3 = {0, 0, 0.0};   // (?, top row)
+    hmLineLen point4 = {0, 0, 0.0};   // (?, bottom row)
+    shawarma_ptr tmpNode_ptr = NULL;  // Iterating pointer
 
     // INPUT VALIDATION
     if (!curWindow)
@@ -1500,23 +1508,121 @@ bool calculate_line_intercepts(winDetails_ptr curWindow, shawarma_ptr sourceNode
     {
         HARKLE_ERROR(Harkleswarm, calculate_line_intercepts, Invalid outHeadNode_ptr pointer);
     }
-    else if (2 > get_num_cartCoord_nodes(outHeadNode_ptr))
+    else if (2 == get_num_cartCoord_nodes(outHeadNode_ptr))
     {
         HARKLE_ERROR(Harkleswarm, calculate_line_intercepts, Not enough nodes);
     }
     else
     {
         success = true;
+        tmpNode_ptr = outHeadNode_ptr;
     }
 
     // CALCULATE LINE INTERCEPTS
     if (true == success)
     {
-        // TO DO: DON'T DO NOW
-        // Get the line formula
+        // Setup values
+        lowerX = curWindow->leftC;
+        upperX = curWindow->leftC + curWindow->nCols - 1;
+        lowerY = curWindow->upperR;
+        upperY = curWindow->upperR + curWindow->nRows - 1;
+
+        // Setup structs
+        point1.xCoord = lowerX;
+        point2.xCoord = upperX;
+        point3.yCoord = lowerY;
+        point4.yCoord = upperY;
+
+        // Calculate unknowns
+        point1.yCoord = solve_point_slope_y(sourceNode_ptr->absX, sourceNode_ptr->absY,
+                                            point1.xCoord, slope, HM_RND);
+        point2.yCoord = solve_point_slope_y(sourceNode_ptr->absX, sourceNode_ptr->absY,
+                                            point2.xCoord, slope, HM_RND);
+        point3.xCoord = solve_point_slope_x(sourceNode_ptr->absX, sourceNode_ptr->absY,
+                                            point3.yCoord, slope, HM_RND);
+        point4.xCoord = solve_point_slope_x(sourceNode_ptr->absX, sourceNode_ptr->absY,
+                                            point4.yCoord, slope, HM_RND);
+
+        //DEBUGGING
+        printf("Window Dimensions: (%d, %d) to (%d, %d)\n", lowerX, lowerY, upperX, upperY);  // DEBUGGING
+        printf("Point1 (x, y) == (%d, %d)\n", point1.xCoord, point1.yCoord);  // DEBUGGING
+        printf("Point2 (x, y) == (%d, %d)\n", point2.xCoord, point2.yCoord);  // DEBUGGING
+        printf("Point3 (x, y) == (%d, %d)\n", point3.xCoord, point3.yCoord);  // DEBUGGING
+        printf("Point4 (x, y) == (%d, %d)\n", point4.xCoord, point4.yCoord);  // DEBUGGING
+
+        // Find the points
+        // Point 1
+        if (true == success && point1.yCoord >= lowerY && point1.yCoord <= upperY)
+        {
+            if (!tmpNode_ptr)
+            {
+                HARKLE_ERROR(Harkleswarm, calculate_line_intercepts, Invalid pointer to outHeadNode_ptr);
+                success = false;
+            }
+            else
+            {
+                printf("Adding point1\n");  // DEBUGGING
+                tmpNode_ptr->absX = point1.xCoord;
+                tmpNode_ptr->absY = point1.yCoord;
+                tmpNode_ptr = tmpNode_ptr->nextPnt;
+            }
+        }
+        // Point 2
+        if (true == success && point2.yCoord >= lowerY && point2.yCoord <= upperY)
+        {
+            if (!tmpNode_ptr)
+            {
+                HARKLE_ERROR(Harkleswarm, calculate_line_intercepts, Invalid pointer to outHeadNode_ptr);
+                success = false;
+            }
+            else
+            {
+                printf("Adding point2\n");  // DEBUGGING
+                tmpNode_ptr->absX = point2.xCoord;
+                tmpNode_ptr->absY = point2.yCoord;
+                tmpNode_ptr = tmpNode_ptr->nextPnt;
+            }
+        }
+        // Point 3
+        if (true == success && point3.xCoord >= lowerX && point3.xCoord <= upperX)
+        {
+            if (!tmpNode_ptr)
+            {
+                HARKLE_ERROR(Harkleswarm, calculate_line_intercepts, Found too many valid solutions);
+                success = false;
+            }
+            else
+            {
+                printf("Adding point3\n");  // DEBUGGING
+                tmpNode_ptr->absX = point3.xCoord;
+                tmpNode_ptr->absY = point3.yCoord;
+                tmpNode_ptr = tmpNode_ptr->nextPnt;
+            }
+        }
+        // Point 4
+        if (true == success && point4.yCoord >= lowerX && point4.yCoord <= upperX)
+        {
+            if (!tmpNode_ptr)
+            {
+                HARKLE_ERROR(Harkleswarm, calculate_line_intercepts, Found too many valid solutions);
+                success = false;
+            }
+            else
+            {
+                printf("Adding point4\n");  // DEBUGGING
+                tmpNode_ptr->absX = point4.xCoord;
+                tmpNode_ptr->absY = point4.yCoord;
+                tmpNode_ptr = tmpNode_ptr->nextPnt;
+            }
+        }
     }
 
     // DONE
+    if (true == success && tmpNode_ptr)
+    {
+        HARKLE_ERROR(Harkleswarm, calculate_line_intercepts, Did not find enough solutions);
+        success = false;
+    }
     return success;
 }
 

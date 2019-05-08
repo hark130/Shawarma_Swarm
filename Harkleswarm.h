@@ -251,6 +251,12 @@ bool calculate_intercepts(winDetails_ptr curWindow, shawarma_ptr headNode_ptr, s
         sourceNode_ptr - shawarma struct pointer to use as the 'origin' point to calculate intercepts
         outHeadNode_ptr - Linked list of 'out' parameter nodes in which to store the line intercepts
         slope - Slope used to determine the intercepts from sourceNode_ptr
+    OUTPUT
+        On success, true
+        On failure, false
+    NOTES
+        On success, outHeadNode_ptr's linked list will be popuplated with the intersections of the
+            line defined by sourceNode_ptr (and it's slope) and curWindow
 
  */
 bool calculate_line_intercepts(winDetails_ptr curWindow, shawarma_ptr sourceNode_ptr,

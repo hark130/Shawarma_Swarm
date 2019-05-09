@@ -1500,7 +1500,7 @@ bool calculate_line_intercepts(winDetails_ptr curWindow, shawarma_ptr sourceNode
     {
         HARKLE_ERROR(Harkleswarm, calculate_line_intercepts, Invalid outHeadNode_ptr pointer);
     }
-    else if (2 == get_num_cartCoord_nodes(outHeadNode_ptr))
+    else if (2 != get_num_cartCoord_nodes(outHeadNode_ptr))
     {
         HARKLE_ERROR(Harkleswarm, calculate_line_intercepts, Not enough nodes);
     }
@@ -1537,6 +1537,7 @@ bool calculate_line_intercepts(winDetails_ptr curWindow, shawarma_ptr sourceNode
 
         //DEBUGGING
         printf("Window Dimensions: (%d, %d) to (%d, %d)\n", lowerX, lowerY, upperX, upperY);  // DEBUGGING
+        printf("Slope passing through (%d, %d) is %lf\n", sourceNode_ptr->absX, sourceNode_ptr->absY, slope);  // DEBUGGING
         printf("Point1 (x, y) == (%d, %d)\n", point1.xCoord, point1.yCoord);  // DEBUGGING
         printf("Point2 (x, y) == (%d, %d)\n", point2.xCoord, point2.yCoord);  // DEBUGGING
         printf("Point3 (x, y) == (%d, %d)\n", point3.xCoord, point3.yCoord);  // DEBUGGING

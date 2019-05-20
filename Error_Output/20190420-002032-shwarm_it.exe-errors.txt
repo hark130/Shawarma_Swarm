@@ -1,0 +1,222 @@
+Max rows: 24
+Max cols: 80
+
+Field rows: 20
+Field cols: 72
+
+	Address: 0x556c207fbb00
+	X Coord: 52
+	Y Coord: 12
+	Pos Num: 1
+	Flags:   0
+
+	Address: 0x556c207fbb30
+	X Coord: 11
+	Y Coord: 8
+	Pos Num: 2
+	Flags:   0
+
+	Address: 0x556c207fbb60
+	X Coord: 13
+	Y Coord: 16
+	Pos Num: 3
+	Flags:   0
+
+Max rows: 20
+Max cols: 72
+
+Field rows: 20
+Field cols: 72
+
+	Address: 0x556c207fc260
+	X Coord: 52
+	Y Coord: 2
+	Pos Num: 0
+	Flags:   0
+
+	Address: 0x556c207fc290
+	X Coord: 52
+	Y Coord: 21
+	Pos Num: 0
+	Flags:   0
+
+	Address: 0x556c207fc2c0
+	X Coord: 75
+	Y Coord: 12
+	Pos Num: 0
+	Flags:   0
+
+	Address: 0x556c207fc2f0
+	X Coord: 4
+	Y Coord: 12
+	Pos Num: 0
+	Flags:   0
+
+Source Node
+	Address: 0x556c207fbb00
+	X Coord: 52
+	Y Coord: 12
+	Pos Num: 1
+	Flags:   0
+
+Testing the following 'A' point
+	Address: 0x556c207fbb30
+	X Coord: 11
+	Y Coord: 8
+	Pos Num: 2
+	Flags:   0
+
+Testing the following 'B' point
+	Address: 0x556c207fbb60
+	X Coord: 13
+	Y Coord: 16
+	Pos Num: 3
+	Flags:   0
+
+Testing the following 'C' point
+	Address: 0x556c207fc260
+	X Coord: 52
+	Y Coord: 2
+	Pos Num: 0
+	Flags:   0
+
+Triangle?
+Source Node
+	Address: 0x556c207fbb00
+	X Coord: 52
+	Y Coord: 12
+	Pos Num: 1
+	Flags:   0
+
+Testing the following 'A' point
+	Address: 0x556c207fbb30
+	X Coord: 11
+	Y Coord: 8
+	Pos Num: 2
+	Flags:   0
+
+Testing the following 'B' point
+	Address: 0x556c207fbb60
+	X Coord: 13
+	Y Coord: 16
+	Pos Num: 3
+	Flags:   0
+
+Testing the following 'C' point
+	Address: 0x556c207fc290
+	X Coord: 52
+	Y Coord: 21
+	Pos Num: 0
+	Flags:   0
+
+Triangle?
+Source Node
+	Address: 0x556c207fbb00
+	X Coord: 52
+	Y Coord: 12
+	Pos Num: 1
+	Flags:   0
+
+Testing the following 'A' point
+	Address: 0x556c207fbb30
+	X Coord: 11
+	Y Coord: 8
+	Pos Num: 2
+	Flags:   0
+
+Testing the following 'B' point
+	Address: 0x556c207fbb60
+	X Coord: 13
+	Y Coord: 16
+	Pos Num: 3
+	Flags:   0
+
+Testing the following 'C' point
+	Address: 0x556c207fc2c0
+	X Coord: 75
+	Y Coord: 12
+	Pos Num: 0
+	Flags:   0
+
+Triangle?
+Source Node
+	Address: 0x556c207fbb00
+	X Coord: 52
+	Y Coord: 12
+	Pos Num: 1
+	Flags:   0
+
+Testing the following 'A' point
+	Address: 0x556c207fbb30
+	X Coord: 11
+	Y Coord: 8
+	Pos Num: 2
+	Flags:   0
+
+Testing the following 'B' point
+	Address: 0x556c207fbb60
+	X Coord: 13
+	Y Coord: 16
+	Pos Num: 3
+	Flags:   0
+
+Testing the following 'C' point
+	Address: 0x556c207fc2f0
+	X Coord: 4
+	Y Coord: 12
+	Pos Num: 0
+	Flags:   0
+
+Triangle?
+<<<ERROR>>> - Harkleswarm - find_closest_two_dim_points() - Failed to find points!
+stdwin is NULL
+
+Field rows: 20
+Field cols: 72
+
+	Address: 0x556c207fbb00
+	X Coord: 52
+	Y Coord: 12
+	Pos Num: 1
+	Flags:   0
+
+	Address: 0x556c207fbb30
+	X Coord: 11
+	Y Coord: 8
+	Pos Num: 2
+	Flags:   0
+
+	Address: 0x556c207fbb60
+	X Coord: 13
+	Y Coord: 16
+	Pos Num: 3
+	Flags:   0
+
+	Address: 0x556c207fc260
+	X Coord: 52
+	Y Coord: 2
+	Pos Num: 0
+	Flags:   0
+
+	Address: 0x556c207fc290
+	X Coord: 52
+	Y Coord: 21
+	Pos Num: 0
+	Flags:   0
+
+	Address: 0x556c207fc2c0
+	X Coord: 75
+	Y Coord: 12
+	Pos Num: 0
+	Flags:   0
+
+	Address: 0x556c207fc2f0
+	X Coord: 4
+	Y Coord: 12
+	Pos Num: 0
+	Flags:   0
+
+<<<ERROR>>> - Harkleswarm - find_closest_points() - find_closest_two_dim_points failed!
+<<<ERROR>>> - Harkleswarm - shwarm_two_dim() - find_closest_points encountered an error!
+<<<ERROR>>> - Harkleswarm - shwarm_it() - shwarm_two_dim failed!
+<<<ERROR>>> - Shwarm_It - main() - shwarm_it failed!

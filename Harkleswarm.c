@@ -10,6 +10,7 @@
 #define HARKLESWARM_MAX_TRIES 30
 #endif  // HARKLESWARM_MAX_TRIES
 
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////// LOCAL FUNCTIONS //////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -289,6 +290,7 @@ int shwarm_one_dim(winDetails_ptr curWindow, shawarma_ptr headNode_ptr, shawarma
         if (false == success)
         {
             HARKLE_ERROR(Harkleswarm, shwarm_one_dim, Provided points are not in a line);
+            print_debug_info(NULL, curWindow, headNode_ptr);  // DEBUGGING
         }
     }
 
@@ -305,6 +307,11 @@ int shwarm_one_dim(winDetails_ptr curWindow, shawarma_ptr headNode_ptr, shawarma
         {
             HARKLE_ERROR(Harkleswarm, shwarm_one_dim, Failed to add intercept nodes to the tail node);
             success = false;
+        }
+        else
+        {
+            // fprintf(stderr, "In shwarm_one_dim()\n");  // DEBUGGING
+            // print_debug_info(curWindow, curWindow, intNode_ptr);  // DEBUGGING
         }
     }
 
@@ -554,7 +561,7 @@ int find_closest_one_dim_points(winDetails_ptr curWindow, shawarma_ptr headNode_
                     else
                     {
                         HARKLE_ERROR(Harkleswarm, find_closest_one_dim_points, Line is non-vertical but found duplicate x coordinates);
-                        printf("Source (x, y) == (%d, %d) and tmpNode (x, y) == (%d, %d)\n", sourceNode_ptr->absX, sourceNode_ptr->absY, tmpNode_ptr->absX, tmpNode_ptr->absY);  // DEBUGGING
+                        fprintf(stderr, "Source (x, y) == (%d, %d) and tmpNode (x, y) == (%d, %d)\n", sourceNode_ptr->absX, sourceNode_ptr->absY, tmpNode_ptr->absX, tmpNode_ptr->absY);  // DEBUGGING
                         numPoints = -1;
                     }
                 }
@@ -606,8 +613,8 @@ int find_closest_one_dim_points(winDetails_ptr curWindow, shawarma_ptr headNode_
                     }
                     else
                     {
-                        HARKLE_ERROR(Harkleswarm, find_closest_one_dim_points, Line is non-vertical but found duplicate y coordinates);
-                        printf("Source (x, y) == (%d, %d) and tmpNode (x, y) == (%d, %d)\n", sourceNode_ptr->absX, sourceNode_ptr->absY, tmpNode_ptr->absX, tmpNode_ptr->absY);  // DEBUGGING
+                        HARKLE_ERROR(Harkleswarm, find_closest_one_dim_points, Line is vertical but found duplicate y coordinates);
+                        // fprintf(stderr, "Source (x, y) == (%d, %d) and tmpNode (x, y) == (%d, %d)\n", sourceNode_ptr->absX, sourceNode_ptr->absY, tmpNode_ptr->absX, tmpNode_ptr->absY);  // DEBUGGING
                         numPoints = -1;
                     }
                 }
@@ -743,7 +750,8 @@ bool calculate_intercepts_one_dim(winDetails_ptr curWindow, shawarma_ptr headNod
             intHeadNode_ptr->absY = curWindow->upperR;
             // Bottom intercept
             intHeadNode_ptr->nextPnt->absX = headNode_ptr->absX;
-            intHeadNode_ptr->nextPnt->absY = curWindow ->upperR + curWindow->nRows;
+            intHeadNode_ptr->nextPnt->absY = curWindow ->upperR + curWindow->nRows - 1;
+            // print_debug_info(curWindow, curWindow, intHeadNode_ptr);  // DEBUGGING
         }
         else
         {
@@ -760,6 +768,7 @@ bool calculate_intercepts_one_dim(winDetails_ptr curWindow, shawarma_ptr headNod
     if (true == success)
     {
         *outHeadNode_ptr = intHeadNode_ptr;
+        // print_debug_info(curWindow, curWindow, intHeadNode_ptr);  // DEBUGGING
     }
     else
     {
@@ -1237,8 +1246,8 @@ bool verify_line(shawarma_ptr headNode_ptr, double slope, int maxPrec)
 
             if (false == dble_equal_to(tmpSlope, slope, maxPrec))
             {
-                printf("verify_line() ERROR tmpSlope %f != slope %f\n", tmpSlope, slope);  // DEBUGGING
-                printf("tmpNode (x, y) == (%d, %d) and tmpNode->nextPnt (x, y) == (%d, %d)\n", tmpNode_ptr->absX, tmpNode_ptr->absY, tmpNode_ptr->nextPnt->absX, tmpNode_ptr->nextPnt->absY);  // DEBUGGING
+                fprintf(stderr, "verify_line() ERROR tmpSlope %f != slope %f\n", tmpSlope, slope);  // DEBUGGING
+                fprintf(stderr, "tmpNode (x, y) == (%d, %d) and tmpNode->nextPnt (x, y) == (%d, %d)\n", tmpNode_ptr->absX, tmpNode_ptr->absY, tmpNode_ptr->nextPnt->absX, tmpNode_ptr->nextPnt->absY);  // DEBUGGING
                 straightLine = false;
                 break;
             }
@@ -1278,9 +1287,9 @@ bool calc_hsLineLen_contents(shawarma_ptr sourceNode_ptr, shawarma_ptr destNode_
     }
     else if (sourceNode_ptr->absX == destNode_ptr->absX && sourceNode_ptr->absY == destNode_ptr->absY)
     {
-        printf("calc_hsLineLen_contents() ERROR ");  // DEBUGGING
-        printf("Source Node (x, y) == (%d, %d) ", sourceNode_ptr->absX, sourceNode_ptr->absY);  // DEBUGGING
-        printf("Dest Node (x, y) == (%d, %d)\n", destNode_ptr->absX, destNode_ptr->absY);  // DEBUGGING
+        fprintf(stderr, "calc_hsLineLen_contents() ERROR ");  // DEBUGGING
+        fprintf(stderr, "Source Node (x, y) == (%d, %d) ", sourceNode_ptr->absX, sourceNode_ptr->absY);  // DEBUGGING
+        fprintf(stderr, "Dest Node (x, y) == (%d, %d)\n", destNode_ptr->absX, destNode_ptr->absY);  // DEBUGGING
         HARKLE_ERROR(Harkleswarm, calc_hsLineLen_contents, Source and destination coordinates may not be the same);
     }
     else
@@ -1354,22 +1363,22 @@ int move_shawarma(shawarma_ptr node_ptr, hsLineLen_ptr dstCoord_ptr, int maxMove
             {
                 break;
             }
-            // printf("destination (x, y) == (%d, %d) moving node (x, y) == (%d, %d)\n", dstCoord_ptr->xCoord, dstCoord_ptr->yCoord, node_ptr->absX, node_ptr->absY);  // DEBUGGING
-            // printf("xCoord diff == %d and the yCoord diff == %d\n", absXDist, absYDist);  // DEBUGGING
+            // fprintf(stderr, "destination (x, y) == (%d, %d) moving node (x, y) == (%d, %d)\n", dstCoord_ptr->xCoord, dstCoord_ptr->yCoord, node_ptr->absX, node_ptr->absY);  // DEBUGGING
+            // fprintf(stderr, "xCoord diff == %d and the yCoord diff == %d\n", absXDist, absYDist);  // DEBUGGING
             else if (absXDist >= absYDist && absXDist)
             {
                 // X coordinate
                 if (node_ptr->absX > dstCoord_ptr->xCoord)
                 {
-                    // printf("Moving node from (x, y) == (%d, %d)", node_ptr->absX, node_ptr->absY);  // DEBUGGING
+                    // fprintf(stderr, "Moving node from (x, y) == (%d, %d)", node_ptr->absX, node_ptr->absY);  // DEBUGGING
                     node_ptr->absX--;
-                    // printf(" to (x, y) == (%d, %d)\n", node_ptr->absX, node_ptr->absY);  // DEBUGGING
+                    // fprintf(stderr, " to (x, y) == (%d, %d)\n", node_ptr->absX, node_ptr->absY);  // DEBUGGING
                 }
                 else if (node_ptr->absX < dstCoord_ptr->xCoord)
                 {
-                    // printf("Moving node from (x, y) == (%d, %d)", node_ptr->absX, node_ptr->absY);  // DEBUGGING
+                    // fprintf(stderr, "Moving node from (x, y) == (%d, %d)", node_ptr->absX, node_ptr->absY);  // DEBUGGING
                     node_ptr->absX++;
-                    // printf(" to (x, y) == (%d, %d)\n", node_ptr->absX, node_ptr->absY);  // DEBUGGING
+                    // fprintf(stderr, " to (x, y) == (%d, %d)\n", node_ptr->absX, node_ptr->absY);  // DEBUGGING
                 }
                 else
                 {
@@ -1381,15 +1390,15 @@ int move_shawarma(shawarma_ptr node_ptr, hsLineLen_ptr dstCoord_ptr, int maxMove
                 // Y coordinate
                 if (node_ptr->absY > dstCoord_ptr->yCoord)
                 {
-                    // printf("Moving node from (x, y) == (%d, %d)", node_ptr->absX, node_ptr->absY);  // DEBUGGING
+                    // fprintf(stderr, "Moving node from (x, y) == (%d, %d)", node_ptr->absX, node_ptr->absY);  // DEBUGGING
                     node_ptr->absY--;
-                    // printf(" to (x, y) == (%d, %d)\n", node_ptr->absX, node_ptr->absY);  // DEBUGGING
+                    // fprintf(stderr, " to (x, y) == (%d, %d)\n", node_ptr->absX, node_ptr->absY);  // DEBUGGING
                 }
                 else if (node_ptr->absY < dstCoord_ptr->yCoord)
                 {
-                    // printf("Moving node from (x, y) == (%d, %d)", node_ptr->absX, node_ptr->absY);  // DEBUGGING
+                    // fprintf(stderr, "Moving node from (x, y) == (%d, %d)", node_ptr->absX, node_ptr->absY);  // DEBUGGING
                     node_ptr->absY++;
-                    // printf(" to (x, y) == (%d, %d)\n", node_ptr->absX, node_ptr->absY);  // DEBUGGING
+                    // fprintf(stderr, " to (x, y) == (%d, %d)\n", node_ptr->absX, node_ptr->absY);  // DEBUGGING
                 }
                 else
                 {
@@ -1518,6 +1527,7 @@ bool calculate_line_intercepts(winDetails_ptr curWindow, shawarma_ptr sourceNode
         upperX = curWindow->leftC + curWindow->nCols - 1;
         lowerY = curWindow->upperR;
         upperY = curWindow->upperR + curWindow->nRows - 1;
+        // fprintf(stderr, "Upper Left (x, y) == (%d, %d)\nLower Right (x, y) == (%d, %d)\n", lowerX, lowerY, upperX, upperY);  // DEBUGGING
 
         // Setup structs
         point1.xCoord = lowerX;
@@ -1536,12 +1546,12 @@ bool calculate_line_intercepts(winDetails_ptr curWindow, shawarma_ptr sourceNode
                                             point4.yCoord, slope, HM_RND);
 
         //DEBUGGING
-        printf("Window Dimensions: (%d, %d) to (%d, %d)\n", lowerX, lowerY, upperX, upperY);  // DEBUGGING
-        printf("Slope passing through (%d, %d) is %lf\n", sourceNode_ptr->absX, sourceNode_ptr->absY, slope);  // DEBUGGING
-        printf("Point1 (x, y) == (%d, %d)\n", point1.xCoord, point1.yCoord);  // DEBUGGING
-        printf("Point2 (x, y) == (%d, %d)\n", point2.xCoord, point2.yCoord);  // DEBUGGING
-        printf("Point3 (x, y) == (%d, %d)\n", point3.xCoord, point3.yCoord);  // DEBUGGING
-        printf("Point4 (x, y) == (%d, %d)\n", point4.xCoord, point4.yCoord);  // DEBUGGING
+        // fprintf(stderr, "Window Dimensions: (%d, %d) to (%d, %d)\n", lowerX, lowerY, upperX, upperY);  // DEBUGGING
+        // fprintf(stderr, "Slope passing through (%d, %d) is %lf\n", sourceNode_ptr->absX, sourceNode_ptr->absY, slope);  // DEBUGGING
+        // fprintf(stderr, "Point1 (x, y) == (%d, %d)\n", point1.xCoord, point1.yCoord);  // DEBUGGING
+        // fprintf(stderr, "Point2 (x, y) == (%d, %d)\n", point2.xCoord, point2.yCoord);  // DEBUGGING
+        // fprintf(stderr, "Point3 (x, y) == (%d, %d)\n", point3.xCoord, point3.yCoord);  // DEBUGGING
+        // fprintf(stderr, "Point4 (x, y) == (%d, %d)\n", point4.xCoord, point4.yCoord);  // DEBUGGING
 
         // Find the points
         // Point 1
@@ -1554,7 +1564,8 @@ bool calculate_line_intercepts(winDetails_ptr curWindow, shawarma_ptr sourceNode
             }
             else
             {
-                printf("Adding point1\n");  // DEBUGGING
+                // fprintf(stderr, "Adding point1\n");  // DEBUGGING
+                // fprintf(stderr, "Point1 (x, y) == (%d, %d)\n", point1.xCoord, point1.yCoord);  // DEBUGGING
                 tmpNode_ptr->absX = point1.xCoord;
                 tmpNode_ptr->absY = point1.yCoord;
                 tmpNode_ptr = tmpNode_ptr->nextPnt;
@@ -1570,7 +1581,8 @@ bool calculate_line_intercepts(winDetails_ptr curWindow, shawarma_ptr sourceNode
             }
             else
             {
-                printf("Adding point2\n");  // DEBUGGING
+                // fprintf(stderr, "Adding point2\n");  // DEBUGGING
+                // fprintf(stderr, "Point2 (x, y) == (%d, %d)\n", point2.xCoord, point2.yCoord);  // DEBUGGING
                 tmpNode_ptr->absX = point2.xCoord;
                 tmpNode_ptr->absY = point2.yCoord;
                 tmpNode_ptr = tmpNode_ptr->nextPnt;
@@ -1583,26 +1595,34 @@ bool calculate_line_intercepts(winDetails_ptr curWindow, shawarma_ptr sourceNode
             {
                 HARKLE_ERROR(Harkleswarm, calculate_line_intercepts, Found too many valid solutions);
                 success = false;
+                fprintf(stderr, "Error found on calculate_line_intercepts() point 3\n");  // DEBUGGING
+                fprintf(stderr, "Point3 (x, y) == (%d, %d)\n", point3.xCoord, point3.yCoord);  // DEBUGGING
+                // print_debug_info(curWindow, curWindow, sourceNode_ptr);  // DEBUGGING
+                print_node_info(sourceNode_ptr);  // DEBUGGING
             }
             else
             {
-                printf("Adding point3\n");  // DEBUGGING
+                // fprintf(stderr, "Adding point3\n");  // DEBUGGING
                 tmpNode_ptr->absX = point3.xCoord;
                 tmpNode_ptr->absY = point3.yCoord;
                 tmpNode_ptr = tmpNode_ptr->nextPnt;
             }
         }
         // Point 4
-        if (true == success && point4.yCoord >= lowerX && point4.yCoord <= upperX)
+        if (true == success && point4.xCoord >= lowerX && point4.xCoord <= upperX)
         {
             if (!tmpNode_ptr)
             {
                 HARKLE_ERROR(Harkleswarm, calculate_line_intercepts, Found too many valid solutions);
                 success = false;
+                fprintf(stderr, "Error found on calculate_line_intercepts() point 4\n");  // DEBUGGING
+                fprintf(stderr, "Point4 (x, y) == (%d, %d)\n", point4.xCoord, point4.yCoord);  // DEBUGGING
+                // print_debug_info(curWindow, curWindow, sourceNode_ptr);  // DEBUGGING
+                print_node_info(sourceNode_ptr);  // DEBUGGING
             }
             else
             {
-                printf("Adding point4\n");  // DEBUGGING
+                // fprintf(stderr, "Adding point4\n");  // DEBUGGING
                 tmpNode_ptr->absX = point4.xCoord;
                 tmpNode_ptr->absY = point4.yCoord;
                 tmpNode_ptr = tmpNode_ptr->nextPnt;
@@ -1616,6 +1636,9 @@ bool calculate_line_intercepts(winDetails_ptr curWindow, shawarma_ptr sourceNode
         HARKLE_ERROR(Harkleswarm, calculate_line_intercepts, Did not find enough solutions);
         success = false;
     }
+    // fprintf(stderr, "calculate_line_intercepts() calculated these line intercepts\n");  // DEBUGGING
+    // print_debug_info(NULL, curWindow, outHeadNode_ptr);  // DEBUGGING
+
     return success;
 }
 
@@ -1629,4 +1652,68 @@ bool free_shawarma_struct(shawarma_ptr* oldStruct_ptr)
 bool free_shawarma_linked_list(shawarma_ptr* oldHeadNode_ptr)
 {
     return free_cardCoord_linked_list(oldHeadNode_ptr);
+}
+
+
+void print_debug_info(winDetails_ptr stdWin, winDetails_ptr fieldWin, shawarma_ptr headNode_ptr)
+{
+    // LOCAL VARIABLES
+    shawarma_ptr tmp_ptr = headNode_ptr;  // Walk the linked list
+
+    if (stdWin)
+    {
+        fprintf(stderr, "Max rows: %d\nMax cols: %d\n", stdWin->nRows, stdWin->nCols);
+    }
+    else
+    {
+        fprintf(stderr, "stdwin is NULL\n");
+    }
+    fprintf(stderr, "\n");
+
+    if (fieldWin)
+    {
+        fprintf(stderr, "Field rows: %d\nField cols: %d\n", fieldWin->nRows, fieldWin->nCols);
+    }
+    else
+    {
+        fprintf(stderr, "fieldWin is NULL\n");
+    }
+    fprintf(stderr, "\n");
+
+    if (headNode_ptr)
+    {
+        while (tmp_ptr)
+        {
+            print_node_info(tmp_ptr);
+            tmp_ptr = tmp_ptr->nextPnt;
+        }
+    }
+    else
+    {
+        fprintf(stderr, "headNode_ptr is NULL\n");
+    }
+
+    // DONE
+    return;
+}
+
+
+void print_node_info(shawarma_ptr node_ptr)
+{
+    if (node_ptr)
+    {
+        fprintf(stderr, "\tAddress: %p\n", node_ptr);
+        fprintf(stderr, "\tX Coord: %d\n", node_ptr->absX);
+        fprintf(stderr, "\tY Coord: %d\n", node_ptr->absY);
+        fprintf(stderr, "\tPos Num: %d\n", node_ptr->posNum);
+        fprintf(stderr, "\tFlags:   %lu\n", node_ptr->hcFlags);
+    }
+    else
+    {
+        fprintf(stderr, "node_ptr is NULL\n");
+    }
+    fprintf(stderr, "\n");
+
+    // DONE
+    return;
 }

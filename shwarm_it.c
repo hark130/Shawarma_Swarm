@@ -9,9 +9,9 @@
 #define NUM_STARTING_POINTS 3  // Number of initial shawarma
 #define SLEEPY_SHAWARMA 1      // Number of seconds to sleep between shwarm iterations
 
-void print_debug_info(winDetails_ptr stdWin, winDetails_ptr fieldWin, shawarma_ptr headNode_ptr);
+// void print_debug_info(winDetails_ptr stdWin, winDetails_ptr fieldWin, shawarma_ptr headNode_ptr);
 
-void print_node_info(shawarma_ptr node_ptr);
+// void print_node_info(shawarma_ptr node_ptr);
 
 int main(void)
 {
@@ -128,18 +128,22 @@ int main(void)
     if (true == success)
     {
 /* DEBUGGING BEGIN */
-// headNode_ptr->absX = fieldWin->leftC + 1 - HS_OUTER_BORDER_WIDTH_H;
-// headNode_ptr->absY = fieldWin->upperR + 1 - HS_OUTER_BORDER_WIDTH_V;
+headNode_ptr->absX = fieldWin->leftC + 1 - HS_OUTER_BORDER_WIDTH_H + 4;
+headNode_ptr->absY = fieldWin->upperR + 1 - HS_OUTER_BORDER_WIDTH_V + 4;
 shawarma_ptr tmpNode_ptr = headNode_ptr->nextPnt;
-// int offset = 10;
+int offset = 5;
+int yOffset = fieldWin->upperR + 1 - HS_OUTER_BORDER_WIDTH_V + 4;
+int xOffset = fieldWin->leftC + 1 - HS_OUTER_BORDER_WIDTH_H + 8;
 while (tmpNode_ptr)
 {
-    tmpNode_ptr->absX = headNode_ptr->absX;  // Vertical line
+    // tmpNode_ptr->absX = headNode_ptr->absX;  // Vertical line
+    // tmpNode_ptr->absY = yOffset += 4;  // Vertical line
     // tmpNode_ptr->absY = headNode_ptr->absY;  // Horizontal line
+    // tmpNode_ptr->absX = xOffset += 8;  // Horizontal line
     // Slanted line
-    // tmpNode_ptr->absX = headNode_ptr->absY + offset;  // Slanted line
-    // tmpNode_ptr->absY = headNode_ptr->absY + offset;  // Slanted line
-    // offset += 20;  // Slanted line
+    tmpNode_ptr->absX = headNode_ptr->absY + offset;  // Slanted line
+    tmpNode_ptr->absY = headNode_ptr->absY + offset;  // Slanted line
+    offset += 5;  // Slanted line
     tmpNode_ptr = tmpNode_ptr->nextPnt;
 }
 /* DEBUGGING END */
@@ -148,7 +152,7 @@ while (tmpNode_ptr)
         {
             HARKLE_ERROR(Shwarm_It, main, print_plot_list failed);
             success = false;
-            print_debug_info(stdWin, fieldWin, headNode_ptr);
+            // print_debug_info(stdWin, fieldWin, headNode_ptr);  // DEBUGGING
         }
         else if (OK != wrefresh(fieldWin->win_ptr))  // Print it on the real screen
         {
@@ -161,6 +165,7 @@ while (tmpNode_ptr)
     // START SWARMING
     if (true == success)
     {
+        // print_debug_info(stdWin, fieldWin, headNode_ptr);  // DEBUGGING
         do
         {
             numMoves = 0;  // Reset counting variable
@@ -228,6 +233,7 @@ while (tmpNode_ptr)
             HARKLE_ERROR(Shwarm_It, main, mvwaddstr failed);
             success = false;
         }
+        // print_debug_info(stdWin, fieldWin, headNode_ptr);  // DEBUGGING
         getch();  // Wait for the user to press a key
         clear();  // Clear the screen
     }
@@ -276,68 +282,68 @@ while (tmpNode_ptr)
 }
 
 
-void print_debug_info(winDetails_ptr stdWin, winDetails_ptr fieldWin, shawarma_ptr headNode_ptr)
-{
-    // LOCAL VARIABLES
-    shawarma_ptr tmp_ptr = headNode_ptr;  // Walk the linked list
+// void print_debug_info(winDetails_ptr stdWin, winDetails_ptr fieldWin, shawarma_ptr headNode_ptr)
+// {
+//     // LOCAL VARIABLES
+//     shawarma_ptr tmp_ptr = headNode_ptr;  // Walk the linked list
 
-    if (stdWin)
-    {
-        fprintf(stderr, "Max rows: %d\nMax cols: %d\n", stdWin->nRows, stdWin->nCols);
-    }
-    else
-    {
-        fprintf(stderr, "stdwin is NULL\n");
-    }
-    fprintf(stderr, "\n");
+//     if (stdWin)
+//     {
+//         fprintf(stderr, "Max rows: %d\nMax cols: %d\n", stdWin->nRows, stdWin->nCols);
+//     }
+//     else
+//     {
+//         fprintf(stderr, "stdwin is NULL\n");
+//     }
+//     fprintf(stderr, "\n");
 
-    if (fieldWin)
-    {
-        fprintf(stderr, "Field rows: %d\nField cols: %d\n", fieldWin->nRows, fieldWin->nCols);
-    }
-    else
-    {
-        fprintf(stderr, "fieldWin is NULL\n");
-    }
-    fprintf(stderr, "\n");
+//     if (fieldWin)
+//     {
+//         fprintf(stderr, "Field rows: %d\nField cols: %d\n", fieldWin->nRows, fieldWin->nCols);
+//     }
+//     else
+//     {
+//         fprintf(stderr, "fieldWin is NULL\n");
+//     }
+//     fprintf(stderr, "\n");
 
-    if (headNode_ptr)
-    {
-        while (tmp_ptr)
-        {
-            print_node_info(tmp_ptr);
-            tmp_ptr = tmp_ptr->nextPnt;
-        }
-    }
-    else
-    {
-        fprintf(stderr, "headNode_ptr is NULL\n");
-    }
+//     if (headNode_ptr)
+//     {
+//         while (tmp_ptr)
+//         {
+//             print_node_info(tmp_ptr);
+//             tmp_ptr = tmp_ptr->nextPnt;
+//         }
+//     }
+//     else
+//     {
+//         fprintf(stderr, "headNode_ptr is NULL\n");
+//     }
 
-    // DONE
-    return;
-}
+//     // DONE
+//     return;
+// }
 
 
-void print_node_info(shawarma_ptr node_ptr)
-{
-    if (node_ptr)
-    {
-        fprintf(stderr, "\tAddress: %p\n", node_ptr);
-        fprintf(stderr, "\tX Coord: %d\n", node_ptr->absX);
-        fprintf(stderr, "\tY Coord: %d\n", node_ptr->absY);
-        fprintf(stderr, "\tPos Num: %d\n", node_ptr->posNum);
-        fprintf(stderr, "\tFlags:   %lu\n", node_ptr->hcFlags);
-    }
-    else
-    {
-        fprintf(stderr, "node_ptr is NULL\n");
-    }
-    fprintf(stderr, "\n");
+// void print_node_info(shawarma_ptr node_ptr)
+// {
+//     if (node_ptr)
+//     {
+//         fprintf(stderr, "\tAddress: %p\n", node_ptr);
+//         fprintf(stderr, "\tX Coord: %d\n", node_ptr->absX);
+//         fprintf(stderr, "\tY Coord: %d\n", node_ptr->absY);
+//         fprintf(stderr, "\tPos Num: %d\n", node_ptr->posNum);
+//         fprintf(stderr, "\tFlags:   %lu\n", node_ptr->hcFlags);
+//     }
+//     else
+//     {
+//         fprintf(stderr, "node_ptr is NULL\n");
+//     }
+//     fprintf(stderr, "\n");
 
-    // DONE
-    return;
-}
+//     // DONE
+//     return;
+// }
 
 
 // STRUCT MEMBERS

@@ -439,12 +439,12 @@ int shwarm_two_dim(winDetails_ptr curWindow, shawarma_ptr headNode_ptr, shawarma
     // LOCAL VARIABLES
     int numMoves = -1;     // Number of moves made
     bool success = true;   // Prove this wrong
-    int numClosePnts = 0;  // Number of points that find_closest_triangle() found
+    int numClosePnts = 0;  // Number of points that find_closest_points() found
     shawarma_ptr intNode_ptr = NULL;   // Head node for the intercept head node pointer
     shawarma_ptr tmpNode_ptr = NULL;   // Iterating variable
-    hsLineLen point1 = { 0, 0, 0.0 };  // Out parameter for find_closest_triangle()
-    hsLineLen point2 = { 0, 0, 0.0 };  // Out parameter for find_closest_triangle()
-    hsLineLen point3 = { 0, 0, 0.0 };  // Out parameter for find_closest_triangle()
+    hsLineLen point1 = { 0, 0, 0.0 };  // Out parameter for find_closest_points()
+    hsLineLen point2 = { 0, 0, 0.0 };  // Out parameter for find_closest_points()
+    hsLineLen point3 = { 0, 0, 0.0 };  // Out parameter for find_closest_points()
     hsLineLen centerPnt = { 0, 0, 0.0 };  // Out parameter for determine_triangle_center()
     hsLineLen_ptr coord_arr[] = { &point1, &point2, &point3, NULL };
 
@@ -462,7 +462,7 @@ int shwarm_two_dim(winDetails_ptr curWindow, shawarma_ptr headNode_ptr, shawarma
     // 4. Consider intercepts
     if (true == success && true == intercepts)
     {
-        success = calculate_intercepts(curWindow, headNode_ptr, sourceNode_ptr, &intNode_ptr, 1);
+        success = calculate_intercepts(curWindow, headNode_ptr, sourceNode_ptr, &intNode_ptr, 2);
 
         if (false == success)
         {
@@ -496,12 +496,12 @@ int shwarm_two_dim(winDetails_ptr curWindow, shawarma_ptr headNode_ptr, shawarma
         // Two dimensions should find three points (dim + 1)
         if (-1 == numClosePnts)
         {
-            HARKLE_ERROR(Harkleswarm, shwarm_two_dim, find_closest_triangle encountered an error);
+            HARKLE_ERROR(Harkleswarm, shwarm_two_dim, find_closest_points encountered an error);
             success = false;
         }
         else if (3 != numClosePnts)
         {
-            HARKLE_ERROR(Harkleswarm, shwarm_two_dim, find_closest_triangle found an invalid number of points);
+            HARKLE_ERROR(Harkleswarm, shwarm_two_dim, find_closest_points found an invalid number of points);
             success = false;
         }
     }
@@ -859,15 +859,30 @@ int find_closest_two_dim_points(winDetails_ptr curWindow, shawarma_ptr headNode_
             {
                 while (tmpHeadC_ptr && tmpHeadB_ptr != sourceNode_ptr && tmpHeadA_ptr != tmpHeadB_ptr)
                 {
-                    if (tmpHeadC_ptr != sourceNode_ptr && tmpHeadB_ptr != tmpHeadC_ptr)
+                    if (tmpHeadC_ptr != sourceNode_ptr && tmpHeadA_ptr != tmpHeadC_ptr && tmpHeadB_ptr != tmpHeadC_ptr)
                     {
+                        fprintf(stderr, "Source Node\n");  // DEBUGGING
+                        print_node_info(sourceNode_ptr);  // DEBUGGING
+                        fprintf(stderr, "Testing the following 'A' point\n");  // DEBUGGING
+                        print_node_info(tmpHeadA_ptr);  // DEBUGGING
+                        fprintf(stderr, "Testing the following 'B' point\n");  // DEBUGGING
+                        print_node_info(tmpHeadB_ptr);  // DEBUGGING
+                        fprintf(stderr, "Testing the following 'C' point\n");  // DEBUGGING
+                        print_node_info(tmpHeadC_ptr);  // DEBUGGING
+                        fprintf(stderr, "Triangle?\n");  // DEBUGGING
                         // Is sourceNode_ptr inside the triangle formed by ABC?
                         if (true == verify_triangle(tmpHeadA_ptr->absX, tmpHeadA_ptr->absY,
                                                     tmpHeadB_ptr->absX, tmpHeadB_ptr->absY,
                                                     tmpHeadC_ptr->absX, tmpHeadC_ptr->absY,
                                                     sourceNode_ptr->absX, sourceNode_ptr->absY,
-                                                    DBL_PRECISION))
+                                                    DBL_PRECISION - 2))
                         {
+                            fprintf(stderr, "Triangle!\n");  // DEBUGGING
+                            fprintf(stderr, "Considering the following encapsulating points\n");  // DEBUGGING
+                            print_node_info(sourceNode_ptr);  // DEBUGGING
+                            print_node_info(tmpHeadA_ptr);  // DEBUGGING
+                            print_node_info(tmpHeadB_ptr);  // DEBUGGING
+                            print_node_info(tmpHeadC_ptr);  // DEBUGGING
                             // 1. Calculate distance
                             tmpTotalDist = 0.0;  // Reset temp variable
                             tmpTotalDist += calc_int_point_dist(tmpHeadA_ptr->absX, tmpHeadA_ptr->absY,
@@ -924,6 +939,11 @@ int find_closest_two_dim_points(winDetails_ptr curWindow, shawarma_ptr headNode_
             HARKLE_ERROR(Harkleswarm, find_closest_two_dim_points, Returned duplicate points);
             numPoints = -1;
         }
+    }
+    else
+    {
+        HARKLE_ERROR(Harkleswarm, find_closest_two_dim_points, Failed to find points);
+        print_debug_info(NULL, curWindow, headNode_ptr);
     }
 
     // DONE
@@ -1007,7 +1027,7 @@ bool calculate_intercepts_one_dim(winDetails_ptr curWindow, shawarma_ptr headNod
         {
             if (intHeadNode_ptr != add_cartCoord_node(intHeadNode_ptr, tmpNode_ptr, 0))
             {
-                HARKLE_ERROR(Harkleswarm, calculate_intercepts_one_dim, build_new_cartCoord_struct failed);
+                HARKLE_ERROR(Harkleswarm, calculate_intercepts_one_dim, add_cartCoord_node failed);
                 success = false;
             }
             else
@@ -1055,6 +1075,111 @@ bool calculate_intercepts_one_dim(winDetails_ptr curWindow, shawarma_ptr headNod
             if (false == free_cardCoord_linked_list(&intHeadNode_ptr))
             {
                 HARKLE_ERROR(Harkleswarm, calculate_intercepts_one_dim, free_cardCoord_linked_list failed);
+            }
+        }
+    }
+
+    // DONE
+    return success;
+}
+
+
+/*
+    PURPOSE - Create a linked list of shawarma nodes holding the graph intercepts for sourceNode_ptr, a node
+        in headNode_ptr's linked list, within curWindow's two dimensions
+    INPUT
+        curWindow - Pointer to a winDetails struct (used to determine window border points)
+        sourceNode_ptr - Pointer to the source of the intercepts
+        outHeadNode_ptr - Pointer to a location to store the head node of the linked list of intercepts
+    NOTES
+        This function only calculates line intercepts
+        No other input validation is done in this function.  It is assumed that the calling function validated
+            all the parameters passed here.
+
+ */
+bool calculate_intercepts_two_dim(winDetails_ptr curWindow, shawarma_ptr sourceNode_ptr, shawarma_ptr *outHeadNode_ptr)
+{
+    // LOCAL VARIABLES
+    bool success = true;                  // Indicates function success
+    shawarma_ptr intHeadNode_ptr = NULL;  // Allocate the new 'intercepts' head node pointer here
+    shawarma_ptr tmpNode_ptr = NULL;      // Temporary shawarma pointer variable
+    int numNodes = 0;                     // Loop through the construction of the new nodes
+
+    // CALCULATE INTERCEPTS
+    // 1. Allocate nodes
+    if (true == success)
+    {
+        while (true == success && numNodes < 4)
+        {
+            // Allocate a node
+            tmpNode_ptr = build_new_cartCoord_struct(0, 0, 0, 0);
+
+            // Success?
+            if (!tmpNode_ptr)
+            {
+                HARKLE_ERROR(Harkleswarm, calculate_intercepts_two_dim, build_new_cartCoord_struct failed);
+                success = false;
+            }
+            // First node?
+            else if (!intHeadNode_ptr)
+            {
+                intHeadNode_ptr = tmpNode_ptr;
+                tmpNode_ptr = NULL;
+                numNodes++;
+            }
+            // New tail node!
+            else
+            {
+                if (intHeadNode_ptr != add_cartCoord_node(intHeadNode_ptr, tmpNode_ptr, 0))
+                {
+                    HARKLE_ERROR(Harkleswarm, calculate_intercepts_two_dim, add_cartCoord_node failed);
+                    success = false;
+                }
+                else
+                {
+                    tmpNode_ptr = NULL;
+                    numNodes++;
+                }
+            }
+        }
+    }
+
+    // 2. Calculate line intercepts
+    if (true == success && 4 == numNodes)
+    {
+        tmpNode_ptr = intHeadNode_ptr;  // Reuse temp variable
+        // Top intercept
+        tmpNode_ptr->absX = sourceNode_ptr->absX;
+        tmpNode_ptr->absY = curWindow->upperR;
+        tmpNode_ptr = tmpNode_ptr->nextPnt;
+        // Bottom intercept
+        tmpNode_ptr->absX = sourceNode_ptr->absX;
+        tmpNode_ptr->absY = curWindow->upperR + curWindow->nRows - 1;
+        tmpNode_ptr = tmpNode_ptr->nextPnt;
+        // Right intercept
+        tmpNode_ptr->absX = curWindow->leftC + curWindow->nCols - 1;
+        tmpNode_ptr->absY = sourceNode_ptr->absY;
+        tmpNode_ptr = tmpNode_ptr->nextPnt;
+        // Left intercept
+        tmpNode_ptr->absX = curWindow->leftC;
+        tmpNode_ptr->absY = sourceNode_ptr->absY;
+        tmpNode_ptr = NULL;
+        print_debug_info(curWindow, curWindow, intHeadNode_ptr);  // DEBUGGING
+    }
+
+    // CLEAN UP
+    if (true == success)
+    {
+        *outHeadNode_ptr = intHeadNode_ptr;
+        // print_debug_info(curWindow, curWindow, intHeadNode_ptr);  // DEBUGGING
+    }
+    else
+    {
+        if (intHeadNode_ptr)
+        {
+            if (false == free_cardCoord_linked_list(&intHeadNode_ptr))
+            {
+                HARKLE_ERROR(Harkleswarm, calculate_intercepts_two_dim, free_cardCoord_linked_list failed);
             }
         }
     }
@@ -1765,6 +1890,15 @@ bool calculate_intercepts(winDetails_ptr curWindow, shawarma_ptr headNode_ptr, s
                 if (false == success)
                 {
                     HARKLE_ERROR(Harkleswarm, calculate_intercepts, calculate_intercepts_one_dim failed);
+                    success = false;
+                }
+                break;
+            case 2:
+                success = calculate_intercepts_two_dim(curWindow, sourceNode_ptr, outHeadNode_ptr);
+
+                if (false == success)
+                {
+                    HARKLE_ERROR(Harkleswarm, calculate_intercepts, calculate_intercepts_two_dim failed);
                     success = false;
                 }
                 break;

@@ -128,24 +128,24 @@ int main(void)
     if (true == success)
     {
 /* DEBUGGING BEGIN */
-headNode_ptr->absX = fieldWin->leftC + 1 - HS_OUTER_BORDER_WIDTH_H + 4;
-headNode_ptr->absY = fieldWin->upperR + 1 - HS_OUTER_BORDER_WIDTH_V + 4;
-shawarma_ptr tmpNode_ptr = headNode_ptr->nextPnt;
-int offset = 5;
-int yOffset = fieldWin->upperR + 1 - HS_OUTER_BORDER_WIDTH_V + 4;
-int xOffset = fieldWin->leftC + 1 - HS_OUTER_BORDER_WIDTH_H + 8;
-while (tmpNode_ptr)
-{
+// headNode_ptr->absX = fieldWin->leftC + 1 - HS_OUTER_BORDER_WIDTH_H + 4;
+// headNode_ptr->absY = fieldWin->upperR + 1 - HS_OUTER_BORDER_WIDTH_V + 4;
+// shawarma_ptr tmpNode_ptr = headNode_ptr->nextPnt;
+// int offset = 5;
+// int yOffset = fieldWin->upperR + 1 - HS_OUTER_BORDER_WIDTH_V + 4;
+// int xOffset = fieldWin->leftC + 1 - HS_OUTER_BORDER_WIDTH_H + 8;
+// while (tmpNode_ptr)
+// {
     // tmpNode_ptr->absX = headNode_ptr->absX;  // Vertical line
     // tmpNode_ptr->absY = yOffset += 4;  // Vertical line
     // tmpNode_ptr->absY = headNode_ptr->absY;  // Horizontal line
     // tmpNode_ptr->absX = xOffset += 8;  // Horizontal line
     // Slanted line
-    tmpNode_ptr->absX = headNode_ptr->absY + offset;  // Slanted line
-    tmpNode_ptr->absY = headNode_ptr->absY + offset;  // Slanted line
-    offset += 5;  // Slanted line
-    tmpNode_ptr = tmpNode_ptr->nextPnt;
-}
+    // tmpNode_ptr->absX = headNode_ptr->absY + offset;  // Slanted line
+    // tmpNode_ptr->absY = headNode_ptr->absY + offset;  // Slanted line
+    // offset += 5;  // Slanted line
+    // tmpNode_ptr = tmpNode_ptr->nextPnt;
+// }
 /* DEBUGGING END */
         // Update field window
         if (false == print_plot_list(fieldWin->win_ptr, headNode_ptr))
@@ -173,7 +173,7 @@ while (tmpNode_ptr)
             for (i = 1; i <= curNumPoints; i++)
             {
                 // tmpNumMoves = shwarm_it(fieldWin, headNode_ptr, HS_MAX_SWARM_MOVES, i, 1, false);
-                tmpNumMoves = shwarm_it(fieldWin, headNode_ptr, HS_MAX_SWARM_MOVES, i, 1, true);
+                tmpNumMoves = shwarm_it(fieldWin, headNode_ptr, HS_MAX_SWARM_MOVES, i, 2, true);
                 // printf("Node %d was moved %d times.\n", i, tmpNumMoves);  // DEBUGGING
 
                 if (0 > tmpNumMoves)

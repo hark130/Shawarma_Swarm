@@ -235,7 +235,7 @@ bool find_longest_entry(hsLineLen_ptr* coord_arr, hsLineLen_ptr outNode_ptr, int
 
 
 /*
-    PURPOSE - Update the coordiantes of shawarma node sourceNode_ptr by moving it 'maxMoves' toward equilibrium in
+    PURPOSE - Update the coordinates of shawarma node sourceNode_ptr by moving it 'maxMoves' toward equilibrium in
         one (1) dimension
     INPUT
         curWindow - Pointer to a winDetails struct (used to determine window border points)
@@ -419,7 +419,172 @@ int shwarm_one_dim(winDetails_ptr curWindow, shawarma_ptr headNode_ptr, shawarma
 
 
 /*
-    PURPOSE - Finds the nearest "up slope" and "down slope" points to sourneNode_ptr within headNode_ptr's linked
+    PURPOSE - Update the coordinates of shawarma node sourceNode_ptr by moving it 'maxMoves' toward equilibrium in
+        two (2) dimensions
+    INPUT
+        curWindow - Pointer to a winDetails struct (used to determine window border points)
+        headNode_ptr - Pointer to the head node of a linked list of shawarma pointers containing available points
+        sourceNode_ptr - shawarma struct pointer to use as the 'origin' point to calculate distances and move
+        maxMoves - Number of one-dimensional moves, regardless of dimension, the node may move to pursue equilibrium
+        intercepts - If true, dimensional intercepts will be treated as points for the purposes of equilibrium
+    OUTPUT
+        On success, number of moves made (not to exceed maxMoves).  0 indicates success (and also equilibrium).
+        On failure, -1
+    NOTES
+        This function does not perform input validation.  It assumes the calling function has already validated
+            the parameter being passed in.
+ */
+int shwarm_two_dim(winDetails_ptr curWindow, shawarma_ptr headNode_ptr, shawarma_ptr sourceNode_ptr, int maxMoves, bool intercepts)
+{
+    // LOCAL VARIABLES
+    int numMoves = -1;     // Number of moves made
+    bool success = true;   // Prove this wrong
+    int numClosePnts = 0;  // Number of points that find_closest_triangle() found
+    shawarma_ptr intNode_ptr = NULL;   // Head node for the intercept head node pointer
+    shawarma_ptr tmpNode_ptr = NULL;   // Iterating variable
+    hsLineLen point1 = { 0, 0, 0.0 };  // Out parameter for find_closest_triangle()
+    hsLineLen point2 = { 0, 0, 0.0 };  // Out parameter for find_closest_triangle()
+    hsLineLen point3 = { 0, 0, 0.0 };  // Out parameter for find_closest_triangle()
+    hsLineLen centerPnt = { 0, 0, 0.0 };  // Out parameter for determine_triangle_center()
+    hsLineLen_ptr coord_arr[] = { &point1, &point2, &point3, NULL };
+
+    // SWARM
+    // 1. Verify minimum number of points (need two to get a slope)
+    if (true == success)
+    {
+        if (3 > get_num_cartCoord_nodes(headNode_ptr))
+        {
+            HARKLE_ERROR(Harkleswarm, shwarm_two_dim, Too few points to determine slope);
+            success = false;
+        }
+    }
+
+    // 4. Consider intercepts
+    if (true == success && true == intercepts)
+    {
+        success = calculate_intercepts(curWindow, headNode_ptr, sourceNode_ptr, &intNode_ptr, 1);
+
+        if (false == success)
+        {
+            HARKLE_ERROR(Harkleswarm, shwarm_two_dim, calculate_intercepts failed);
+        }
+        else if (headNode_ptr != add_cartCoord_node(headNode_ptr, intNode_ptr, 0))
+        {
+            HARKLE_ERROR(Harkleswarm, shwarm_two_dim, Failed to add intercept nodes to the tail node);
+            success = false;
+        }
+        else
+        {
+            // fprintf(stderr, "In shwarm_two_dim()\n");  // DEBUGGING
+            // print_debug_info(curWindow, curWindow, intNode_ptr);  // DEBUGGING
+        }
+    }
+
+    // 5. Find closest inclusive triangle
+    if (true == success)
+    {
+        // printf("BEFORE\n");  // DEBUGGING
+        // printf("Source_ptr (x, y) == (%d, %d)\n", sourceNode_ptr->absX, sourceNode_ptr->absY); // DEBUGGING
+        // printf("Point 1 (x, y) == (%d, %d)\n", point1.xCoord, point1.yCoord);  // DEBUGGING
+        // printf("Point 2 (x, y) == (%d, %d)\n", point2.xCoord, point2.yCoord);  // DEBUGGING
+        numClosePnts = find_closest_points(curWindow, headNode_ptr, sourceNode_ptr, coord_arr);
+        // printf("AFTER\n");  // DEBUGGING
+        // printf("Source_ptr (x, y) == (%d, %d)\n", sourceNode_ptr->absX, sourceNode_ptr->absY); // DEBUGGING
+        // printf("Point 1 (x, y) == (%d, %d)\n", point1.xCoord, point1.yCoord);  // DEBUGGING
+        // printf("Point 2 (x, y) == (%d, %d)\n", point2.xCoord, point2.yCoord);  // DEBUGGING
+
+        // Two dimensions should find three points (dim + 1)
+        if (-1 == numClosePnts)
+        {
+            HARKLE_ERROR(Harkleswarm, shwarm_two_dim, find_closest_triangle encountered an error);
+            success = false;
+        }
+        else if (3 != numClosePnts)
+        {
+            HARKLE_ERROR(Harkleswarm, shwarm_two_dim, find_closest_triangle found an invalid number of points);
+            success = false;
+        }
+    }
+
+    // 6. Calculate triangle's center
+    if (true == success)
+    {
+        success = determine_triangle_center(&point1, &point2, &point3, &centerPnt, 0);
+
+        if (false == success)
+        {
+            HARKLE_ERROR(Harkleswarm, shwarm_two_dim, determine_triangle_center failed);
+        }
+    }
+
+    // 7. Clear the old point before the move (as long as we're not on the end)
+    if (true == success)
+    {
+        // Clear the old point
+        success = clear_this_coord(curWindow, sourceNode_ptr);
+
+        if (false == success)
+        {
+            HARKLE_ERROR(Harkleswarm, shwarm_two_dim, clear_this_coord failed);
+        }
+    }
+
+    // 8. Move the point closer (as long as we're not on the end)
+    if (true == success)
+    {
+        numMoves = move_shawarma(sourceNode_ptr, &centerPnt, maxMoves);
+
+        if (0 > numMoves)
+        {
+            HARKLE_ERROR(Harkleswarm, shwarm_two_dim, move_shawarma failed);
+            success = false;
+        }
+    }
+
+    // DONE
+    // Check for end of line
+    if (true == success && 1 == numClosePnts)
+    {
+        // Found the end of the line and didn't move it
+        numMoves = 0;
+    }
+    // Remove intercept nodes (if applicable)
+    if (intNode_ptr)
+    {
+        tmpNode_ptr = headNode_ptr;
+
+        while (tmpNode_ptr)
+        {
+            if (tmpNode_ptr->nextPnt == intNode_ptr)
+            {
+                if (false == free_shawarma_linked_list(&(tmpNode_ptr->nextPnt)))
+                {
+                    HARKLE_ERROR(Harkleswarm, shwarm_two_dim, free_shawarma_linked_list failed);
+                    success = false;
+                }
+                else
+                {
+                    intNode_ptr = NULL;
+                    break;
+                }
+            }
+
+            tmpNode_ptr = tmpNode_ptr->nextPnt;
+        }
+
+        if (intNode_ptr)
+        {
+            HARKLE_ERROR(Harkleswarm, shwarm_two_dim, Failed to free the intercept linked list);
+            success = false;
+        }
+    }
+
+    return numMoves;
+}
+
+
+/*
+    PURPOSE - Finds the nearest "up slope" and "down slope" points to sourceNode_ptr within headNode_ptr's linked
         list and stores the values in coord_arr
     INPUT
         curWindow - Pointer to a winDetails struct (used to determine window border points)
@@ -645,6 +810,119 @@ int find_closest_one_dim_points(winDetails_ptr curWindow, shawarma_ptr headNode_
             }
 
             tmpNode_ptr = tmpNode_ptr->nextPnt;  // Next node
+        }
+    }
+
+    // DONE
+    return numPoints;
+}
+
+
+/*
+    PURPOSE - Finds the nearest points to sourceNode_ptr, within headNode_ptr's linked list, that
+        encapsulates sourceNode_ptr in a triangle and stores the values in coord_arr
+    INPUT
+        curWindow - Pointer to a winDetails struct (used to determine window border points)
+        headNode_ptr - Pointer to the head node of a linked list of shawarma pointers containing available points
+        sourceNode_ptr - shawarma struct pointer to use as the 'origin' point to calculate distances
+        coord_arr - NULL-terminated array of three hsLineLen struct pointers to use as 'out' parameters
+    OUTPUT
+        On success, number of hsLineLen struct pointers populated with points and distances.
+        On error, -1
+    NOTES
+        This function assumes that all input validation was accomplished in find_closest_points() and does not
+            perform additional input validation.
+ */
+int find_closest_two_dim_points(winDetails_ptr curWindow, shawarma_ptr headNode_ptr, shawarma_ptr sourceNode_ptr, hsLineLen_ptr* coord_arr)
+{
+    // LOCAL VARIABLES
+    int numPoints = -1;                         // Should wind up to be 3
+    bool success = true;                        // Set this to false if anything fails
+    bool saveIt = true;                         // Avoiding "save these points" duplicate code
+    shawarma_ptr tmpHeadA_ptr = headNode_ptr;   // Iterating variable for the 'in' linked list as point 'A'
+    shawarma_ptr tmpHeadB_ptr = headNode_ptr;   // Iterating variable for the 'in' linked list as point 'B'
+    shawarma_ptr tmpHeadC_ptr = headNode_ptr;   // Iterating variable for the 'in' linked list as point 'C'
+    double curTotalDist = 0.0;                  // Current total distance between the source and coord_arr points
+    double tmpTotalDist = 0.0;                  // Temporarily holds the total distance between source and temp points
+
+    // FIND POINTS
+    // Verify minimum number of nodes exist
+    if (3 > (get_num_cartCoord_nodes(headNode_ptr) - 1))
+    {
+        HARKLE_ERROR(Harkleswarm, find_closest_two_dim_points, Not enough coord_arr entries);
+    }
+    else
+    {
+        while (tmpHeadA_ptr)
+        {
+            while (tmpHeadB_ptr && tmpHeadA_ptr != sourceNode_ptr)
+            {
+                while (tmpHeadC_ptr && tmpHeadB_ptr != sourceNode_ptr && tmpHeadA_ptr != tmpHeadB_ptr)
+                {
+                    if (tmpHeadC_ptr != sourceNode_ptr && tmpHeadB_ptr != tmpHeadC_ptr)
+                    {
+                        // Is sourceNode_ptr inside the triangle formed by ABC?
+                        if (true == verify_triangle(tmpHeadA_ptr->absX, tmpHeadA_ptr->absY,
+                                                    tmpHeadB_ptr->absX, tmpHeadB_ptr->absY,
+                                                    tmpHeadC_ptr->absX, tmpHeadC_ptr->absY,
+                                                    sourceNode_ptr->absX, sourceNode_ptr->absY,
+                                                    DBL_PRECISION))
+                        {
+                            // 1. Calculate distance
+                            tmpTotalDist = 0.0;  // Reset temp variable
+                            tmpTotalDist += calc_int_point_dist(tmpHeadA_ptr->absX, tmpHeadA_ptr->absY,
+                                                                sourceNode_ptr->absX, sourceNode_ptr->absY);
+                            tmpTotalDist += calc_int_point_dist(tmpHeadB_ptr->absX, tmpHeadB_ptr->absY,
+                                                                sourceNode_ptr->absX, sourceNode_ptr->absY);
+                            tmpTotalDist += calc_int_point_dist(tmpHeadC_ptr->absX, tmpHeadC_ptr->absY,
+                                                                sourceNode_ptr->absX, sourceNode_ptr->absY);
+
+                            // 2. Compare distance
+                            if (true == dble_less_than(tmpTotalDist, curTotalDist, DBL_PRECISION))
+                            {
+                                saveIt = true;  // The points of the triangle are closer to the source
+                            }
+
+                            // 3. Are we saving this set?
+                            if (true == saveIt)
+                            {
+                                // Save A into Index 0
+                                coord_arr[0]->xCoord = tmpHeadA_ptr->absX;
+                                coord_arr[0]->yCoord = tmpHeadA_ptr->absY;
+                                // Save B into Index 1
+                                coord_arr[1]->xCoord = tmpHeadB_ptr->absX;
+                                coord_arr[1]->yCoord = tmpHeadB_ptr->absY;
+                                // Save C into Index 2
+                                coord_arr[2]->xCoord = tmpHeadC_ptr->absX;
+                                coord_arr[2]->yCoord = tmpHeadC_ptr->absY;
+                                // Store the new distance
+                                curTotalDist = tmpTotalDist;
+                                // Reset temp variable
+                                saveIt = false;
+                                // We did it!
+                                numPoints = 3;
+                            }
+                        }
+                    }
+
+                    tmpHeadC_ptr = tmpHeadC_ptr->nextPnt;
+                }
+
+                tmpHeadB_ptr = tmpHeadB_ptr->nextPnt;
+            }
+
+            tmpHeadA_ptr = tmpHeadA_ptr->nextPnt;
+        }
+    }
+
+    if (3 == numPoints)
+    {
+        if ((coord_arr[0]->xCoord == coord_arr[1]->xCoord && coord_arr[0]->yCoord == coord_arr[1]->yCoord) ||
+            (coord_arr[0]->xCoord == coord_arr[2]->xCoord && coord_arr[0]->yCoord == coord_arr[2]->yCoord) ||
+            (coord_arr[1]->xCoord == coord_arr[2]->xCoord && coord_arr[1]->yCoord == coord_arr[2]->yCoord))
+        {
+            HARKLE_ERROR(Harkleswarm, find_closest_two_dim_points, Returned duplicate points);
+            numPoints = -1;
         }
     }
 
@@ -1140,6 +1418,20 @@ int find_closest_points(winDetails_ptr curWindow, shawarma_ptr headNode_ptr, sha
                     success = false;
                 }
                 break;
+            case (2):
+                numPoints = find_closest_two_dim_points(curWindow, headNode_ptr, sourceNode_ptr, coord_arr);
+
+                if (0 > numPoints)
+                {
+                    HARKLE_ERROR(Harkleswarm, find_closest_points, find_closest_two_dim_points failed);
+                    success = false;
+                }
+                else if ((numDims + 1) != numPoints)
+                {
+                    HARKLE_ERROR(Harkleswarm, find_closest_points, find_closest_two_dim_points returned an invalid number of points);
+                    success = false;
+                }
+                break;
             default:
                 HARKLE_ERROR(Harkleswarm, find_closest_points, Unsupported number of dimensions);
                 success = false;
@@ -1200,6 +1492,13 @@ int shwarm_it(winDetails_ptr curWindow, shawarma_ptr headNode_ptr, int maxMoves,
                     if (0 > numMoves)
                     {
                         HARKLE_ERROR(Harkleswarm, shwarm_it, shwarm_one_dim failed);
+                    }
+                    break;
+                case 2:
+                    numMoves = shwarm_two_dim(curWindow, headNode_ptr, sourceNode_ptr, maxMoves, intercepts);
+                    if (0 > numMoves)
+                    {
+                        HARKLE_ERROR(Harkleswarm, shwarm_it, shwarm_two_dim failed);
                     }
                     break;
                 default:

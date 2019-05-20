@@ -111,11 +111,16 @@ int main(void)
     // 1. Create swarm
     if (true == success)
     {
-        headNode_ptr = create_shawarma_list(fieldWin->leftC + 1 - HS_OUTER_BORDER_WIDTH_H,
-                                            fieldWin->nCols - 2,
-                                            fieldWin->upperR + 1 - HS_OUTER_BORDER_WIDTH_V,
-                                            fieldWin->nRows - 2,
+        headNode_ptr = create_shawarma_list(fieldWin->leftC + 1,
+                                            fieldWin->nCols - HS_OUTER_BORDER_WIDTH_H - 1,
+                                            fieldWin->upperR + 1,
+                                            fieldWin->nRows - HS_OUTER_BORDER_WIDTH_V - 1,
                                             curNumPoints, 0, 0);
+        // headNode_ptr = create_shawarma_list(fieldWin->leftC + 1 - HS_OUTER_BORDER_WIDTH_H,
+        //                                     fieldWin->nCols - 2,
+        //                                     fieldWin->upperR + 1 - HS_OUTER_BORDER_WIDTH_V,
+        //                                     fieldWin->nRows - 2,
+        //                                     curNumPoints, 0, 0);
 
         if (!headNode_ptr)
         {
@@ -165,7 +170,7 @@ int main(void)
     // START SWARMING
     if (true == success)
     {
-        // print_debug_info(stdWin, fieldWin, headNode_ptr);  // DEBUGGING
+        print_debug_info(stdWin, fieldWin, headNode_ptr);  // DEBUGGING
         do
         {
             numMoves = 0;  // Reset counting variable

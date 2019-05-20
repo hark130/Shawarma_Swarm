@@ -295,4 +295,10 @@ bool free_shawarma_struct(shawarma_ptr* oldStruct_ptr);
 bool free_shawarma_linked_list(shawarma_ptr* oldHeadNode_ptr);
 
 
+void print_debug_info(winDetails_ptr stdWin, winDetails_ptr fieldWin, shawarma_ptr headNode_ptr);
+
+
+void print_node_info(shawarma_ptr node_ptr);
+
+
 #endif  // __HARKLESWARM__

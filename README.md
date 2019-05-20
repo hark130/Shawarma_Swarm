@@ -23,17 +23,24 @@ Make 'swarms' self-organize in a variety of dimensions.
 
 ## To Do
 
-[ ] Harkle_Library
+[X] Harkle_Library
 
-    [ ] New repo
-    [ ] Move up Harklecurse
-    [ ] Move up Harklerror
+    [X] New repo [Harkle_Library](https://github.com/hark130/Harkle_Library)
+    [X] Move up Harklecurse
+    [X] Move up Harklerror
+    [X] Move up Harklemath
+    [X] Move up and rename Rando
 [ ] Harkleswarm library
 
-    [ ] Document reuse of struct hcCartesianCoordinate from Harklecurse.h
-    [ ] Macro for a point's speed (number of moves it makes at once)
-    [ ] Add facility to determine swarm equilibrium
-    [ ] Add facility to interject a "shawarma" (before and after equilibrium)
+    [X] Document reuse of struct hcCartesianCoordinate from Harklecurse.h (Harkleswarm.h)
+    [X] Macro for a point's speed (number of moves it makes at once) (HS_MAX_SWARM_MOVES in Harkleswarm.h)
+    [X] Add facility to determine swarm equilibrium
+    [ ] Add facility to inject a "shawarma" (before and after equilibrium)
+    [ ] Modify the library to 'hide' functions callers don't need (e.g., shwarm_one_dim())
+    [ ] Refactor library functions with duplicate code (e.g., find_closest_one_dim_points())
+    [ ] Consider moving 'local' library function definitions to the end and adding prototypes at the top
+    [ ] Consider refactoring calc_int_point_slope() to better handle vertical lines. That or write a check_vert_line() function.
+    [ ] Refactor calculate_line_intercepts() to be less copy/pasty.  Maybe add struct pointers to an array and iterate over it.
 [X] Main binary
 
     [X] Start shwarm_it.c
@@ -47,8 +54,8 @@ Make 'swarms' self-organize in a variety of dimensions.
     [ ] Build instructions (e.g., make)
     [ ] Execution instructions (e.g., ./shwarm_it.exe)
     [X] Copy/paste git commands
-[ ] Repo Branches
+[X] Repo Branches
 
-    [ ] Create development
-    [ ] Configure development
+    [X] Create development
+    [X] Configure development
     [X] Create/document branch naming process

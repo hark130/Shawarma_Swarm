@@ -206,7 +206,7 @@ bool calculate_intercepts_two_dim(winDetails_ptr curWindow, shawarma_ptr sourceN
     NOTES
         This function was written as a custom helper function for find_closest_two_dim_points().
             It is intended to help stop attempting to match a triangle with too many intercept
-            points.  It is impossible to match an enclosing triangle for point P using two or more
+            points.  It is impossible to match an enclosing triangle for point P using three
             graph intercepts.
  */
 int count_non_intercepts(shawarma_ptr pointA_ptr, shawarma_ptr pointB_ptr, shawarma_ptr pointC_ptr);
@@ -1913,7 +1913,7 @@ int find_closest_two_dim_points(winDetails_ptr curWindow, shawarma_ptr headNode_
                         // while (tmpHeadC_ptr && tmpHeadB_ptr != sourceNode_ptr && tmpHeadA_ptr != tmpHeadB_ptr)
                         {
                             if (tmpHeadC_ptr != sourceNode_ptr && tmpHeadA_ptr != tmpHeadC_ptr && tmpHeadB_ptr != tmpHeadC_ptr &&
-                                1 < count_non_intercepts(tmpHeadA_ptr, tmpHeadB_ptr, tmpHeadC_ptr))
+                                0 < count_non_intercepts(tmpHeadA_ptr, tmpHeadB_ptr, tmpHeadC_ptr))
                             {
                                 // fprintf(stderr, "Source Node\n");  // DEBUGGING
                                 // print_node_info(sourceNode_ptr);  // DEBUGGING
@@ -1929,7 +1929,7 @@ int find_closest_two_dim_points(winDetails_ptr curWindow, shawarma_ptr headNode_
                                                             tmpHeadB_ptr->absX, tmpHeadB_ptr->absY,
                                                             tmpHeadC_ptr->absX, tmpHeadC_ptr->absY,
                                                             sourceNode_ptr->absX, sourceNode_ptr->absY,
-                                                            DBL_PRECISION - 2))
+                                                            DBL_PRECISION - 6))
                                 {
                                     fprintf(stderr, "Triangle!\n");  // DEBUGGING
                                     fprintf(stderr, "Considering the following encapsulating points\n");  // DEBUGGING

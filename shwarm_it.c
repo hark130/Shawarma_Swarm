@@ -6,7 +6,7 @@
 #include <stdbool.h>            // bool, true, false
 #include <unistd.h>             // sleep()
 
-#define NUM_STARTING_POINTS 4  // Number of initial shawarma
+#define NUM_STARTING_POINTS 5  // Number of initial shawarma
 #define SLEEPY_SHAWARMA 1      // Number of seconds to sleep between shwarm iterations
 
 // void print_debug_info(winDetails_ptr stdWin, winDetails_ptr fieldWin, shawarma_ptr headNode_ptr);

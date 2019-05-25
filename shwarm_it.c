@@ -6,7 +6,7 @@
 #include <stdbool.h>            // bool, true, false
 #include <unistd.h>             // sleep()
 
-#define NUM_STARTING_POINTS 20 // Number of initial shawarma
+#define NUM_STARTING_POINTS 9  // Number of initial shawarma
 #define SLEEPY_SHAWARMA 0      // Number of seconds to sleep between shwarm iterations
 #define MAX_UNIQUE_CHAR 9      // Anything more than this value, use DEFAULT_POINT for the shwarm
 #define DEFAULT_POINT '*'      // Use this as the posNum if point count exceeds MAX_UNIQUE_CHAR

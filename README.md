@@ -43,6 +43,10 @@ Make 'swarms' self-organize in a variety of dimensions.
     [ ] Refactor calculate_line_intercepts() to be less copy/pasty.  Maybe add struct pointers to an array and iterate over it.
     [ ] Add a check (helper function call) that verifies destination coordinates are unique. (Maybe refactor move_shawarma() with a new head node param or make that call prior to clear_this_coord() in all the shwarm_*_dim() functions)
     [ ] Add a check (helper function call) that verifies destination coordinates are inside the window. (Maybe refactor move_shawarma() with a new winDetails_ptr param or make that call prior to clear_this_coord() in all the shwarm_*_dim() functions)
+    [ ] Can I avoid duplicate triangle calculations by "checking off" 3-point calculations in a 3-dimensional array?  Is this the ravings of a madman?!  Would this slow down verify_triangle() even worse?!
+    [ ] Could I store the three points encapsulating a given point to avoid iterating over the "universe" of points?!  Is there ever a situation in which a "rogue planet" (see: point) could swoop in and form a new, closer triangle with a given source point that was following three other triangle points?  How massive a refactor would this be?!  GOOD NEWS: Harkleswarm has a level of indirection between shawarma structs and hcCartesianCoordinate structs.  BAD NEWS: I'd have to reimplement many of the support functions I am utilizing and adjust existing functionality to utilize new struct members.
+    [ ] BUG? There seem to be an awful lot of failed calls to calculate_triangle_area() by verify_triangle().  Is there a way to find a common thread and avoid that function call?  Would that speed things up for me?
+    [ ] Should I dial up optimtimization in my Makefile recipe?  (Should I buy a new desktop?!)
 [X] Main binary
 
     [X] Start shwarm_it.c

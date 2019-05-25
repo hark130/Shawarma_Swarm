@@ -1523,7 +1523,7 @@ int shwarm_two_dim(winDetails_ptr curWindow, shawarma_ptr headNode_ptr, shawarma
     hsLineLen point1 = { 0, 0, 0.0 };  // Out parameter for find_closest_points()
     hsLineLen point2 = { 0, 0, 0.0 };  // Out parameter for find_closest_points()
     hsLineLen point3 = { 0, 0, 0.0 };  // Out parameter for find_closest_points()
-    hsLineLen centerPnt = { 0, 0, 0.0 };  // Out parameter for determine_triangle_center()
+    hsLineLen centerPnt = { 0, 0, 0.0 };  // Out parameter for determine_triangle_centroid()
     hsLineLen_ptr coord_arr[] = { &point1, &point2, &point3, NULL };
 
     // SWARM
@@ -1587,11 +1587,11 @@ int shwarm_two_dim(winDetails_ptr curWindow, shawarma_ptr headNode_ptr, shawarma
     // 6. Calculate triangle's center
     if (true == success)
     {
-        success = determine_triangle_center(&point1, &point2, &point3, &centerPnt, 0);
+        success = determine_triangle_centroid(&point1, &point2, &point3, &centerPnt, 0);
 
         if (false == success)
         {
-            HARKLE_ERROR(Harkleswarm, shwarm_two_dim, determine_triangle_center failed);
+            HARKLE_ERROR(Harkleswarm, shwarm_two_dim, determine_triangle_centroid failed);
         }
     }
 

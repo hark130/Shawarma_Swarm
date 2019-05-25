@@ -8,6 +8,8 @@
 
 #define NUM_STARTING_POINTS 20 // Number of initial shawarma
 #define SLEEPY_SHAWARMA 0      // Number of seconds to sleep between shwarm iterations
+#define MAX_UNIQUE_CHAR 9      // Anything more than this value, use DEFAULT_POINT for the shwarm
+#define DEFAULT_POINT '*'      // Use this as the posNum if point count exceeds MAX_UNIQUE_CHAR
 
 // void print_debug_info(winDetails_ptr stdWin, winDetails_ptr fieldWin, shawarma_ptr headNode_ptr);
 
@@ -26,6 +28,7 @@ int main(void)
     int i = 0;                         // Iterating variable
     // Current number of points
     int curNumPoints = NUM_STARTING_POINTS;
+    char charValue = 0;                // Holds the char for create_shawarma_list()'s shChar parameter
     
     // SETUP THE WINDOWS
     if (true == success)
@@ -111,16 +114,16 @@ int main(void)
     // 1. Create swarm
     if (true == success)
     {
+        if (curNumPoints > MAX_UNIQUE_CHAR)
+        {
+            charValue = DEFAULT_POINT;  // Too many points for unique print characters
+        }
+
         headNode_ptr = create_shawarma_list(fieldWin->leftC + 1,
                                             fieldWin->nCols - HS_OUTER_BORDER_WIDTH_H - 1,
                                             fieldWin->upperR + 1,
                                             fieldWin->nRows - HS_OUTER_BORDER_WIDTH_V - 1,
-                                            curNumPoints, 0, 0);
-        // headNode_ptr = create_shawarma_list(fieldWin->leftC + 1 - HS_OUTER_BORDER_WIDTH_H,
-        //                                     fieldWin->nCols - 2,
-        //                                     fieldWin->upperR + 1 - HS_OUTER_BORDER_WIDTH_V,
-        //                                     fieldWin->nRows - 2,
-        //                                     curNumPoints, 0, 0);
+                                            curNumPoints, charValue, 0);
 
         if (!headNode_ptr)
         {

@@ -38,9 +38,11 @@ Make 'swarms' self-organize in a variety of dimensions.
     [ ] Add facility to inject a "shawarma" (before and after equilibrium)
     [ ] Modify the library to 'hide' functions callers don't need (e.g., shwarm_one_dim())
     [ ] Refactor library functions with duplicate code (e.g., find_closest_one_dim_points())
-    [ ] Consider moving 'local' library function definitions to the end and adding prototypes at the top
+    [X] Consider moving 'local' library function definitions to the end and adding prototypes at the top
     [ ] Consider refactoring calc_int_point_slope() to better handle vertical lines. That or write a check_vert_line() function.
     [ ] Refactor calculate_line_intercepts() to be less copy/pasty.  Maybe add struct pointers to an array and iterate over it.
+    [ ] Add a check (helper function call) that verifies destination coordinates are unique. (Maybe refactor move_shawarma() with a new head node param or make that call prior to clear_this_coord() in all the shwarm_*_dim() functions)
+    [ ] Add a check (helper function call) that verifies destination coordinates are inside the window. (Maybe refactor move_shawarma() with a new winDetails_ptr param or make that call prior to clear_this_coord() in all the shwarm_*_dim() functions)
 [X] Main binary
 
     [X] Start shwarm_it.c

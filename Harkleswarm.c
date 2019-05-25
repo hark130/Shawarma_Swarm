@@ -1894,21 +1894,21 @@ int find_closest_two_dim_points(winDetails_ptr curWindow, shawarma_ptr headNode_
     }
     else
     {
-        fprintf(stderr, "Source Node\n");  // DEBUGGING
-        print_node_info(sourceNode_ptr);  // DEBUGGING
+        // fprintf(stderr, "Source Node\n");  // DEBUGGING
+        // print_node_info(sourceNode_ptr);  // DEBUGGING
         while (tmpHeadA_ptr)
         {
             if (tmpHeadA_ptr != sourceNode_ptr)
             {
-                fprintf(stderr, "Testing the following 'A' point\n");  // DEBUGGING
-                print_node_info(tmpHeadA_ptr);  // DEBUGGING
+                // fprintf(stderr, "Testing the following 'A' point\n");  // DEBUGGING
+                // print_node_info(tmpHeadA_ptr);  // DEBUGGING
                 while (tmpHeadB_ptr)
                 // while (tmpHeadB_ptr && tmpHeadB_ptr != sourceNode_ptr)
                 {
                     if (tmpHeadB_ptr != sourceNode_ptr && tmpHeadA_ptr != tmpHeadB_ptr)
                     {
-                        fprintf(stderr, "Testing the following 'B' point\n");  // DEBUGGING
-                        print_node_info(tmpHeadB_ptr);  // DEBUGGING
+                        // fprintf(stderr, "Testing the following 'B' point\n");  // DEBUGGING
+                        // print_node_info(tmpHeadB_ptr);  // DEBUGGING
                         while (tmpHeadC_ptr)
                         // while (tmpHeadC_ptr && tmpHeadB_ptr != sourceNode_ptr && tmpHeadA_ptr != tmpHeadB_ptr)
                         {
@@ -1921,9 +1921,9 @@ int find_closest_two_dim_points(winDetails_ptr curWindow, shawarma_ptr headNode_
                                 // print_node_info(tmpHeadA_ptr);  // DEBUGGING
                                 // fprintf(stderr, "Testing the following 'B' point\n");  // DEBUGGING
                                 // print_node_info(tmpHeadB_ptr);  // DEBUGGING
-                                fprintf(stderr, "Testing the following 'C' point\n");  // DEBUGGING
-                                print_node_info(tmpHeadC_ptr);  // DEBUGGING
-                                fprintf(stderr, "Triangle?\n");  // DEBUGGING
+                                // fprintf(stderr, "Testing the following 'C' point\n");  // DEBUGGING
+                                // print_node_info(tmpHeadC_ptr);  // DEBUGGING
+                                // fprintf(stderr, "Triangle?\n");  // DEBUGGING
                                 // Is sourceNode_ptr inside the triangle formed by ABC?
                                 if (true == verify_triangle(tmpHeadA_ptr->absX, tmpHeadA_ptr->absY,
                                                             tmpHeadB_ptr->absX, tmpHeadB_ptr->absY,
@@ -1931,12 +1931,12 @@ int find_closest_two_dim_points(winDetails_ptr curWindow, shawarma_ptr headNode_
                                                             sourceNode_ptr->absX, sourceNode_ptr->absY,
                                                             DBL_PRECISION - 6))
                                 {
-                                    fprintf(stderr, "Triangle!\n");  // DEBUGGING
-                                    fprintf(stderr, "Considering the following encapsulating points\n");  // DEBUGGING
-                                    print_node_info(sourceNode_ptr);  // DEBUGGING
-                                    print_node_info(tmpHeadA_ptr);  // DEBUGGING
-                                    print_node_info(tmpHeadB_ptr);  // DEBUGGING
-                                    print_node_info(tmpHeadC_ptr);  // DEBUGGING
+                                    // fprintf(stderr, "Triangle!\n");  // DEBUGGING
+                                    // fprintf(stderr, "Considering the following encapsulating points\n");  // DEBUGGING
+                                    // print_node_info(sourceNode_ptr);  // DEBUGGING
+                                    // print_node_info(tmpHeadA_ptr);  // DEBUGGING
+                                    // print_node_info(tmpHeadB_ptr);  // DEBUGGING
+                                    // print_node_info(tmpHeadC_ptr);  // DEBUGGING
                                     // 1. Calculate distance
                                     tmpTotalDist = 0.0;  // Reset temp variable
                                     tmpTotalDist += calc_int_point_dist(tmpHeadA_ptr->absX, tmpHeadA_ptr->absY,
@@ -1955,6 +1955,12 @@ int find_closest_two_dim_points(winDetails_ptr curWindow, shawarma_ptr headNode_
                                     // 3. Are we saving this set?
                                     if (true == saveIt)
                                     {
+                                        fprintf(stderr, "This is the new smallest triangle: source, A, B, C\n");  // DEBUGGING
+                                        fprintf(stderr, "Old area: %.15lf New area: %.15lf\n", curTotalDist, tmpTotalDist);  // DEBUGGING
+                                        print_node_info(sourceNode_ptr);  // DEBUGGING
+                                        print_node_info(tmpHeadA_ptr);  // DEBUGGING
+                                        print_node_info(tmpHeadB_ptr);  // DEBUGGING
+                                        print_node_info(tmpHeadC_ptr);  // DEBUGGING
                                         // Save A into Index 0
                                         coord_arr[0]->xCoord = tmpHeadA_ptr->absX;
                                         coord_arr[0]->yCoord = tmpHeadA_ptr->absY;

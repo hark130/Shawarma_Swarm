@@ -49,9 +49,11 @@ Make 'swarms' self-organize in a variety of dimensions.
     [ ] Should I dial up optimization in my Makefile recipe?  (Should I buy a new desktop?!)
     [ ] Consider adding an option/interface to calculate, move, and print one point at a time.  It may be more inefficient but I think it would be better to watch.
     [ ] Get the cursor out of the way.  Leaving the cursor by the last point is distracting and detracts from the aesthetic I'm looking for.
+    [ ] BUG? Two dimensional shwarming without intercepts hangs(?) on 'border' points.
 [X] Main binary
 
     [X] Start shwarm_it.c
+    [ ] Add CLI arguments that control the number of dimensions, number of points, method of swarming, intercepts, trails, etc.
 [X] Makefile
 
     [X] Setup macros(?) for external libraries

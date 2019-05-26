@@ -9,6 +9,7 @@
 // MACRO to limit repeated search attempts
 #define HARKLESWARM_MAX_TRIES 30
 #endif  // HARKLESWARM_MAX_TRIES
+#define HS_DEFAULT_POINT '*'   // Use this as the posNum if alphanumeric characters ran out
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -91,6 +92,7 @@ bool find_longest_entry(hsLineLen_ptr* coord_arr, hsLineLen_ptr outNode_ptr, int
         sourceNode_ptr - shawarma struct pointer to use as the 'origin' point to calculate distances and move
         maxMoves - Number of one-dimensional moves, regardless of dimension, the node may move to pursue equilibrium
         intercepts - If true, dimensional intercepts will be treated as points for the purposes of equilibrium
+        trail - If true, previous printed point will not be cleared.  Each point will leave a trail as it moves.
     OUTPUT
         On success, number of moves made (not to exceed maxMoves).  0 indicates success (and also equilibrium).
         On failure, -1
@@ -98,7 +100,7 @@ bool find_longest_entry(hsLineLen_ptr* coord_arr, hsLineLen_ptr outNode_ptr, int
         This function does not perform input validation.  It assumes the calling function has already validated
             the parameter being passed in.
  */
-int shwarm_one_dim(winDetails_ptr curWindow, shawarma_ptr headNode_ptr, shawarma_ptr sourceNode_ptr, int maxMoves, bool intercepts);
+int shwarm_one_dim(winDetails_ptr curWindow, shawarma_ptr headNode_ptr, shawarma_ptr sourceNode_ptr, int maxMoves, bool intercepts, bool trail);
 
 
 /*
@@ -110,6 +112,7 @@ int shwarm_one_dim(winDetails_ptr curWindow, shawarma_ptr headNode_ptr, shawarma
         sourceNode_ptr - shawarma struct pointer to use as the 'origin' point to calculate distances and move
         maxMoves - Number of one-dimensional moves, regardless of dimension, the node may move to pursue equilibrium
         intercepts - If true, dimensional intercepts will be treated as points for the purposes of equilibrium
+        trail - If true, previous printed point will not be cleared.  Each point will leave a trail as it moves.
     OUTPUT
         On success, number of moves made (not to exceed maxMoves).  0 indicates success (and also equilibrium).
         On failure, -1
@@ -117,7 +120,7 @@ int shwarm_one_dim(winDetails_ptr curWindow, shawarma_ptr headNode_ptr, shawarma
         This function does not perform input validation.  It assumes the calling function has already validated
             the parameter being passed in.
  */
-int shwarm_two_dim(winDetails_ptr curWindow, shawarma_ptr headNode_ptr, shawarma_ptr sourceNode_ptr, int maxMoves, bool intercepts);
+int shwarm_two_dim(winDetails_ptr curWindow, shawarma_ptr headNode_ptr, shawarma_ptr sourceNode_ptr, int maxMoves, bool intercepts, bool trail);
 
 
 /*
@@ -288,7 +291,22 @@ shawarma_ptr create_shawarma_list(int xMin, int xMax, int yMin, int yMax, int li
             // Determine character value
             if (0 == shChar)
             {
-                localShChar = i + 48;
+                if (9 >= i)
+                {
+                    localShChar = i + 48;  // 1 becomes '1'
+                }
+                else if (10 <= i && 35 >= i)
+                {
+                    localShChar = i + 55;  // 10 becomes 'A'
+                }
+                else if (36 <= i && 61 >= i)
+                {
+                    localShChar = i + 61;  // 36 becomes 'a'
+                }
+                else
+                {
+                    localShChar = HS_DEFAULT_POINT;  // '*'
+                }
             }
 
             // First node
@@ -593,7 +611,7 @@ int find_closest_points(winDetails_ptr curWindow, shawarma_ptr headNode_ptr, sha
 }
 
 
-int shwarm_it(winDetails_ptr curWindow, shawarma_ptr headNode_ptr, int maxMoves, int srcNum, int numDim, bool intercepts)
+int shwarm_it(winDetails_ptr curWindow, shawarma_ptr headNode_ptr, int maxMoves, int srcNum, int numDim, bool intercepts, bool trail)
 {
     // LOCAL VARIABLES
     int numMoves = -1;                   // Store the return value from helper functions here
@@ -636,14 +654,14 @@ int shwarm_it(winDetails_ptr curWindow, shawarma_ptr headNode_ptr, int maxMoves,
             switch (numDim)
             {
                 case 1:
-                    numMoves = shwarm_one_dim(curWindow, headNode_ptr, sourceNode_ptr, maxMoves, intercepts);
+                    numMoves = shwarm_one_dim(curWindow, headNode_ptr, sourceNode_ptr, maxMoves, intercepts, trail);
                     if (0 > numMoves)
                     {
                         HARKLE_ERROR(Harkleswarm, shwarm_it, shwarm_one_dim failed);
                     }
                     break;
                 case 2:
-                    numMoves = shwarm_two_dim(curWindow, headNode_ptr, sourceNode_ptr, maxMoves, intercepts);
+                    numMoves = shwarm_two_dim(curWindow, headNode_ptr, sourceNode_ptr, maxMoves, intercepts, trail);
                     if (0 > numMoves)
                     {
                         HARKLE_ERROR(Harkleswarm, shwarm_it, shwarm_two_dim failed);
@@ -1344,7 +1362,7 @@ bool find_longest_entry(hsLineLen_ptr* coord_arr, hsLineLen_ptr outNode_ptr, int
 }
 
 
-int shwarm_one_dim(winDetails_ptr curWindow, shawarma_ptr headNode_ptr, shawarma_ptr sourceNode_ptr, int maxMoves, bool intercepts)
+int shwarm_one_dim(winDetails_ptr curWindow, shawarma_ptr headNode_ptr, shawarma_ptr sourceNode_ptr, int maxMoves, bool intercepts, bool trail)
 {
     // LOCAL VARIABLES
     int numMoves = -1;     // Number of moves made
@@ -1446,8 +1464,9 @@ int shwarm_one_dim(winDetails_ptr curWindow, shawarma_ptr headNode_ptr, shawarma
         }
     }
 
-    // 7. Clear the old point before the move (as long as we're not on the end)
-    if (true == success && 1 < numClosePnts)
+    // 7. Clear the old point before the move (as long as we're not on the end) and the
+    // caller doesn't want to leave a trail
+    if (true == success && 1 < numClosePnts && false == trail)
     {
         // Clear the old point
         success = clear_this_coord(curWindow, sourceNode_ptr);
@@ -1512,7 +1531,7 @@ int shwarm_one_dim(winDetails_ptr curWindow, shawarma_ptr headNode_ptr, shawarma
 }
 
 
-int shwarm_two_dim(winDetails_ptr curWindow, shawarma_ptr headNode_ptr, shawarma_ptr sourceNode_ptr, int maxMoves, bool intercepts)
+int shwarm_two_dim(winDetails_ptr curWindow, shawarma_ptr headNode_ptr, shawarma_ptr sourceNode_ptr, int maxMoves, bool intercepts, bool trail)
 {
     // LOCAL VARIABLES
     int numMoves = -1;     // Number of moves made
@@ -1595,8 +1614,9 @@ int shwarm_two_dim(winDetails_ptr curWindow, shawarma_ptr headNode_ptr, shawarma
         }
     }
 
-    // 7. Clear the old point before the move (as long as we're not on the end)
-    if (true == success)
+    // 7. Clear the old point before the move (as long as we're not on the end) and the
+    // caller doesn't want to leave a trail
+    if (true == success && false == trail)
     {
         // Clear the old point
         success = clear_this_coord(curWindow, sourceNode_ptr);

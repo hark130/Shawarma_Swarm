@@ -161,13 +161,14 @@ int find_closest_points(winDetails_ptr curWindow, shawarma_ptr headNode_ptr, sha
         srcNum - shawarma struct posNum value to use as the 'origin' point to calculate distances
         numDim - Number of dimensions in which to organize the swarm
         intercepts - If true, dimensional intercepts will be treated as points for the purposes of equilibrium
+        trail - If true, previous printed point will not be cleared.  Each point will leave a trail as it moves.
     OUTPUT
         On success, number of moves made (not to exceed maxMoves).  0 indicates success (and also equilibrium).
         On failure, -1
     NOTES
         This function is really a 'wrapper' around dimensionally-specific helper functions
  */
-int shwarm_it(winDetails_ptr curWindow, shawarma_ptr headNode_ptr, int maxMoves, int srcNum, int numDim, bool intercepts);
+int shwarm_it(winDetails_ptr curWindow, shawarma_ptr headNode_ptr, int maxMoves, int srcNum, int numDim, bool intercepts, bool trail);
 
 
 /*

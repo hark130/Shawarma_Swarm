@@ -6,10 +6,13 @@
 #include <stdbool.h>            // bool, true, false
 #include <unistd.h>             // sleep()
 
-#define NUM_STARTING_POINTS 9  // Number of initial shawarma
+#define NUM_STARTING_POINTS 15 // Number of initial shawarma
 #define SLEEPY_SHAWARMA 0      // Number of seconds to sleep between shwarm iterations
-#define MAX_UNIQUE_CHAR 9      // Anything more than this value, use DEFAULT_POINT for the shwarm
-#define DEFAULT_POINT '*'      // Use this as the posNum if point count exceeds MAX_UNIQUE_CHAR
+#define MAX_UNIQUE_CHAR 16     // Anything more than this value, use SI_DEFAULT_POINT for the shwarm
+#define SI_DEFAULT_POINT '*'   // Use this as the posNum if point count exceeds MAX_UNIQUE_CHAR
+#define NUM_DIMENSIONS 2       // Will tell Harkleswarm how many dimensions to utilize
+#define USE_INTERCEPTS true    // Will tell Harkleswarm to use the window intercepts or not
+#define LEAVE_A_TRAIL false    // Will tell Harkleswarm to clear old points or not
 
 // void print_debug_info(winDetails_ptr stdWin, winDetails_ptr fieldWin, shawarma_ptr headNode_ptr);
 
@@ -116,7 +119,7 @@ int main(void)
     {
         if (curNumPoints > MAX_UNIQUE_CHAR)
         {
-            charValue = DEFAULT_POINT;  // Too many points for unique print characters
+            charValue = SI_DEFAULT_POINT;  // Too many points for unique print characters
         }
 
         headNode_ptr = create_shawarma_list(fieldWin->leftC + 1,
@@ -180,8 +183,8 @@ int main(void)
 
             for (i = 1; i <= curNumPoints; i++)
             {
-                // tmpNumMoves = shwarm_it(fieldWin, headNode_ptr, HS_MAX_SWARM_MOVES, i, 1, false);
-                tmpNumMoves = shwarm_it(fieldWin, headNode_ptr, HS_MAX_SWARM_MOVES, i, 2, true);
+                tmpNumMoves = shwarm_it(fieldWin, headNode_ptr, HS_MAX_SWARM_MOVES, i,
+                                        NUM_DIMENSIONS, USE_INTERCEPTS, LEAVE_A_TRAIL);
                 // printf("Node %d was moved %d times.\n", i, tmpNumMoves);  // DEBUGGING
 
                 if (0 > tmpNumMoves)

@@ -8,7 +8,7 @@
 
 #define NUM_STARTING_POINTS 15 // Number of initial shawarma
 #define SLEEPY_SHAWARMA 0      // Number of seconds to sleep between shwarm iterations
-#define MAX_UNIQUE_CHAR 16     // Anything more than this value, use SI_DEFAULT_POINT for the shwarm
+#define MAX_UNIQUE_CHAR 61     // Anything more than this value, use SI_DEFAULT_POINT for the shwarm
 #define SI_DEFAULT_POINT '*'   // Use this as the posNum if point count exceeds MAX_UNIQUE_CHAR
 #define NUM_DIMENSIONS 2       // Will tell Harkleswarm how many dimensions to utilize
 #define USE_INTERCEPTS true    // Will tell Harkleswarm to use the window intercepts or not
